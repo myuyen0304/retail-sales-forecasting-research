@@ -8,7 +8,7 @@ Cập nhật 23/10/2026 sau yêu cầu bắt đầu huấn luyện và lựa ch�
 - Chưa export snapshot, chưa có training local/cloud và chưa có score thực nghiệm mới.
 - Đã kiểm databricks auth profiles ngoài sandbox: retail-dev tồn tại nhưng Valid=NO. Chưa dùng profile này để truy vấn actual hoặc chạy compute.
 - Phiên trợ lý không có công cụ điều khiển Colab. Người dùng đã chọn mở notebook và bấm chạy. Cần catalog/release đã chọn và thông tin kết nối nguồn trong Colab; không gửi secret vào chat.
-- Chưa commit/push.
+- Đã commit riêng từng file và push lên GitHub main ngày 23/10/2026; đợt đầu kết thúc ở a25fc96. Kiểm tra Git log/remote để biết trạng thái mới nhất.
 - Hướng dẫn chạy và giới hạn: CLOUD_RUN.md.
 - Các mục bên dưới là bản bàn giao lịch sử trước yêu cầu triển khai; trạng thái “chỉ kế hoạch/chưa code” đã được thay bởi mục hiện tại này.
 
