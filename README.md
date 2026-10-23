@@ -2,7 +2,13 @@
 
 Nghiên cứu độc lập về dự báo **doanh thu gộp G và giá vốn COGS theo ngày**, theo hướng survey và benchmark nhiều họ mô hình.
 
-**Trạng thái ngày 23/10/2026:** đã chuẩn bị pilot CPU trên Colab miễn phí. Chưa có lượt train cloud được xác nhận. Xem [CLOUD_RUN.md](CLOUD_RUN.md) và [notebook Colab](notebooks/01_colab_cpu_pilot.ipynb).
+**Trạng thái ngày 23/10/2026:** đã chuẩn bị pilot CPU trên Colab miễn phí. Người dùng đã gửi ảnh pilot F5 trên Colab; artifact và manifest của lượt đó chưa được kiểm. Xem [CLOUD_RUN.md](CLOUD_RUN.md) và [notebook Colab](notebooks/01_colab_cpu_pilot.ipynb).
+
+## Lượt screening các model được yêu cầu
+
+Sau pilot CPU, dùng [notebook CPU](notebooks/02_colab_cpu_screening.ipynb) cho Random Forest, Extra Trees, XGBoost, LightGBM, CatBoost, ARIMA, ARIMAX, SARIMA và SARIMAX. Dùng [notebook GPU](notebooks/03_colab_gpu_screening.ipynb) cho Simple RNN và LSTM. Cả hai notebook đọc lại snapshot actual đã export trên Drive, mặc định chạy F5 rồi có thể chuyển sang năm fold. [Notebook so sánh](notebooks/04_colab_compare_screening.ipynb) chỉ ghép hai run cùng snapshot và cùng tập fold/horizon.
+
+Hướng dẫn chi tiết ở [CLOUD_RUN.md](CLOUD_RUN.md). Đây là code chuẩn bị để người dùng chạy trên Colab; chưa có bằng chứng kết quả đầy đủ, chưa là benchmark 40 model hay final test. Model log_sarimax trong pilot cũ là tên lịch sử chưa chuẩn: cấu hình cũ không khai báo seasonal_order; lượt mới dùng bốn tên ARIMA/ARIMAX/SARIMA/SARIMAX theo đúng cấu hình.
 
 ## Bắt đầu đọc
 
