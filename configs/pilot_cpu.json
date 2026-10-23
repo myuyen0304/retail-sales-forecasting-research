@@ -1,0 +1,67 @@
+{
+  "protocol_id": "pilot-cpu-v1",
+  "seed": 42,
+  "origin": "2019-12-31",
+  "horizons": [
+    30,
+    548
+  ],
+  "models": [
+    "mean",
+    "naive",
+    "drift",
+    "snaive7",
+    "snaive_year",
+    "snaive_two_year",
+    "ridge",
+    "lightgbm",
+    "log_sarimax"
+  ],
+  "targets": [
+    "G",
+    "COGS"
+  ],
+  "lag_days": [
+    1,
+    2,
+    3,
+    7,
+    14,
+    28,
+    30,
+    60,
+    90,
+    180,
+    365,
+    730
+  ],
+  "rolling_days": [
+    7,
+    28,
+    90,
+    365
+  ],
+  "ridge": {
+    "alpha": 10
+  },
+  "lightgbm": {
+    "n_estimators": 200,
+    "num_leaves": 15,
+    "learning_rate": 0.05,
+    "min_child_samples": 30,
+    "verbosity": -1,
+    "n_jobs": 2,
+    "deterministic": true,
+    "force_col_wise": true
+  },
+  "log_sarimax": {
+    "order": [
+      1,
+      0,
+      1
+    ],
+    "trend": "c",
+    "maxiter": 100
+  },
+  "fit_note": "Pilot CPU F5; chưa tuning; chưa chấm final test; không phải benchmark đủ 40 model."
+}
