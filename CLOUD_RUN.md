@@ -16,6 +16,22 @@ Cập nhật 23/10/2026: người dùng đã giao bắt đầu triển khai và 
 - Thời gian pilot chỉ có fit/predict; chưa có benchmark latency nhiều lần, đo RAM/VRAM hoặc timeout cưỡng chế theo task.
 - Chưa khóa khả năng tương thích runtime thực tế; requirements là cấu hình đề xuất cần xác nhận bằng pilot cloud.
 
+## Screening model CPU/GPU sau pilot
+
+- [02_colab_cpu_screening.ipynb](notebooks/02_colab_cpu_screening.ipynb): Random Forest, Extra Trees, XGBoost, LightGBM, CatBoost, ARIMA, ARIMAX, SARIMA, SARIMAX; hai seasonal naive làm đối chứng. Notebook yêu cầu Colab hosted CPU Python 3.13.
+- [03_colab_gpu_screening.ipynb](notebooks/03_colab_gpu_screening.ipynb): Simple RNN, LSTM và cùng hai đối chứng; yêu cầu Colab hosted GPU Python 3.13. PyTorch dùng bản sẵn trên Colab và ghi version vào manifest.
+- [04_colab_compare_screening.ipynb](notebooks/04_colab_compare_screening.ipynb): đọc hai run từ Drive, từ chối ghép khác snapshot/fold/horizon/target. Chỉ xếp hạng model hoàn thành đủ fold.
+
+Trình tự: giữ snapshot từ notebook 01 trong Drive → mở notebook 02 và chạy MODE=pilot → xem mọi status/lỗi → mở notebook 03 trên GPU và chạy MODE=pilot → dùng notebook 04 ghép kết quả. Nếu pilot ổn, đổi MODE=cv ở notebook 02 và 03, chạy tiếp rồi ghép hai run CV mới. Run khác cấu hình có run_id khác; Drive giữ từng task và resume nếu chạy lại cùng code/config/snapshot. Không chuyển sang final test từ các notebook này.
+
+Bộ CPU dùng F1 (lag/rolling + lịch) cho model cây; ARIMAX/SARIMAX dùng sáu biến Fourier năm đã biết trước; ARIMA/SARIMA chỉ dùng chuỗi. SARIMA/SARIMAX có seasonal_order=(1,0,0,7) cho chu kỳ tuần; SARIMAX còn có Fourier năm qua exog. RNN/LSTM dùng F0, lookback 90 ngày, dự báo một bước rồi recursive. Các cấu hình nằm trong configs/screening_*.json. Model thống kê dùng log1p rồi inverse; ghi rõ trong status/manifest. Mỗi model phải có cùng target, fold và horizon để so điểm; khác input set và compute được công khai. Không gộp fit time CPU/GPU thành so sánh tốc độ cùng phần cứng.
+
+Đây là lượt thăm dò được bổ sung sau khi đã xem ảnh pilot F5; trong paper phải ghi rõ exploratory. Chưa tuning, chưa mở final test, chưa đủ 40 model. MAE/MASE/MAPE/RSE lấy từ artifact predictions; kết quả chỉ có sau khi người dùng chạy Colab và kiểm manifest. Không có huấn luyện local. Gói CPU có XGBoost 3.4.1, CatBoost 1.2.10 với wheel Python 3.13; GPU dùng PyTorch có sẵn trên Colab và cần xác nhận CUDA. Nếu runtime báo lỗi cài đặt hoặc hội tụ, giữ nguyên status failed và gửi bảng lỗi để xử lý, không âm thầm bỏ model.
+
+### Ghi chú tên model pilot cũ
+
+Tên log_sarimax trong pilot 01 được giữ để truy nguồn kết quả lịch sử, nhưng code cũ không truyền seasonal_order. Về mặt cấu hình, nó là mô hình ARIMAX trên log với biến lịch; không được dùng như kết quả SARIMA theo mùa. Bảng pilot cũ lọc status=success nên model lỗi không hiện; mở metrics.csv và xem các dòng status khác success. Các notebook mới hiển thị cả lỗi.
+
 ## Colab
 
 Mở notebooks/01_colab_cpu_pilot.ipynb qua Upload notebook trên Colab. Notebook tự chứa bản code pilot và config, không cần push repo hay cài project local. Chọn **hosted CPU runtime**, không dùng local runtime. Chọn **Latest runtime / Python 3.13**; notebook dừng sớm nếu runtime khác. Sau khi cài thư viện, nếu Colab yêu cầu restart session thì restart và chạy lại từ đầu.
