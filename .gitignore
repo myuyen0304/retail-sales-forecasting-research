@@ -218,3 +218,15 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Du lieu va artifact nghien cuu
+/data/
+/artifacts/
+/outputs/
+/checkpoints/
+/runs/
+/snapshots/
+*.parquet
+*.joblib
+.env.*
+!.env.example
