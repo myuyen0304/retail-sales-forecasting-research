@@ -1,3 +1,15 @@
+# Cập nhật 23/10/2026 — screening các model người dùng yêu cầu
+
+- Người dùng gửi ảnh pilot F5 trên Colab; bảng hiển thị 8 model thành công và thiếu log_sarimax. Chưa có metrics.csv/manifest của phiên Colab để kiểm nguyên nhân hoặc công bố số trong paper.
+- Đã chuẩn bị screening.py, bốn config CPU/GPU × pilot/CV, hai notebook chạy Colab và một notebook so sánh. Các model mới: Random Forest, Extra Trees, XGBoost, LightGBM, CatBoost, ARIMA, ARIMAX, SARIMA, SARIMAX, Simple RNN, LSTM. Giữ seasonal naive làm đối chứng.
+- Pilot cũ mang tên log_sarimax nhưng không có seasonal_order; giữ tên lịch sử để không đổi provenance, gắn chú thích trong README/CLOUD_RUN. Lượt mới dùng tên/cấu hình phân biệt.
+- Mọi lượt mới chỉ dùng snapshot actual có manifest/checksum; mặc định F5; CV gồm F1-F5; final test vẫn đóng. Không train local. Kết quả mới chỉ là code chưa được chạy trên Colab.
+- Kiểm tra: cú pháp Python/notebook/config và test giao thức không fit model; chưa có cloud smoke hay bảng điểm mới. Các bảng hiển thị status failed và chỉ xếp hạng model đủ fold.
+- Lượt bổ sung này được thiết kế sau khi đã xem pilot F5, cần ghi exploratory trong paper. Cần chạy notebook 02/03, sau đó chọn hai run cùng snapshot để ghép ở notebook 04. Kiểm lỗi hội tụ SARIMA, thời gian Colab và phiên bản PyTorch trước khi mở CV.
+- Trạng thái commit/push: xác định từ git status sau khi chuyển file vào repo. Không có dữ liệu/secrets/artifact được đưa vào source.
+
+---
+
 ## Cập nhật notebook Python 3.13 (23/10/2026)
 
 - Hai commit Colab mới trên origin/main thêm badge và cell dry-run. Log Colab ghi Python 3.13.16, dry-run cũ thất bại vì databricks-sql-connector 4.0.0 yêu cầu numpy<2; bản sửa chuyển sang connector 4.6.0. Chưa có bằng chứng chạy lại bản sửa trên Colab.
