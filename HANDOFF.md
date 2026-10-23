@@ -1,3 +1,13 @@
+## Cập nhật notebook Python 3.13 (23/10/2026)
+
+- Hai commit Colab mới trên origin/main thêm badge và cell dry-run. Log Colab ghi Python 3.13.16, dry-run cũ thất bại vì databricks-sql-connector 4.0.0 yêu cầu numpy<2; bản sửa chuyển sang connector 4.6.0. Chưa có bằng chứng chạy lại bản sửa trên Colab.
+- Notebook Colab hosted CPU kiểm tra Python 3.13 trước khi cài thư viện; metadata, gói cài và bản requirements nhúng đã đồng bộ. Databricks SQL connector được ghim 4.6.0.
+- Cell cài đặt chỉ nhận wheel và kiểm tra import trong tiến trình con; nếu Colab yêu cầu restart session, chạy lại từ đầu.
+- Chưa chạy notebook trên Colab, chưa export snapshot hoặc train model. Máy soạn code đã kiểm JSON/AST, khớp file nhúng, giải phụ thuộc wheel Linux CPython 3.13 bằng pip dry-run và 6/6 test protocol trên Python 3.13.5; đây không phải cloud smoke.
+- Các mục bàn giao cũ bên dưới là lịch sử tại thời điểm viết; kiểm Git status/log để xác định commit/push của thay đổi này.
+
+---
+
 # Bàn giao hiện tại — pilot Colab CPU
 
 Cập nhật 23/10/2026 sau yêu cầu bắt đầu huấn luyện và lựa chọn Colab miễn phí.
