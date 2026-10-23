@@ -18,7 +18,7 @@ Cập nhật 23/10/2026: người dùng đã giao bắt đầu triển khai và 
 
 ## Colab
 
-Mở notebooks/01_colab_cpu_pilot.ipynb qua Upload notebook trên Colab. Notebook tự chứa bản code pilot và config, không cần push repo hay cài project local. Chọn **hosted CPU runtime**, không dùng local runtime.
+Mở notebooks/01_colab_cpu_pilot.ipynb qua Upload notebook trên Colab. Notebook tự chứa bản code pilot và config, không cần push repo hay cài project local. Chọn **hosted CPU runtime**, không dùng local runtime. Chọn **Latest runtime / Python 3.13**; notebook dừng sớm nếu runtime khác. Sau khi cài thư viện, nếu Colab yêu cầu restart session thì restart và chạy lại từ đầu.
 
 1. Chạy cell kiểm cloud và cài dependency.
 2. Chạy cell ghi module/config trong ổ tạm VM và chạy test không train.
