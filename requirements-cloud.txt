@@ -1,4 +1,5 @@
-# Môi trường pilot CPU trên Python 3.11/3.12; cài trong runtime cloud.
+# -*- coding: utf-8 -*-
+# Môi trường pilot CPU trên Python 3.13 của Colab hosted runtime.
 numpy==2.1.3
 pandas==2.2.3
 scikit-learn==1.6.1
@@ -7,3 +8,4 @@ statsmodels==0.14.4
 matplotlib==3.9.4
 pyarrow==18.1.0
 joblib==1.4.2
+databricks-sql-connector==4.6.0
