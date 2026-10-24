@@ -1,3 +1,12 @@
+# Cập nhật 24/10/2026 — hợp nhất notebook Colab người dùng tải về
+
+- Người dùng cung cấp notebook 01 đã chạy trên Colab. Bản tải về có cell so sánh MAE/biểu đồ do người dùng thêm, output lớn và một credential nằm trong source.
+- Đã đưa riêng cell so sánh vào bản notebook 01 mới nhất của repo. Giữ chú thích giới hạn pilot, bảng lỗi, Colab badge và code export có getpass. Không đưa credential, giá trị nguồn đã điền, execution output hoặc ảnh nhúng lên Git.
+- Kiểm notebook JSON/cú pháp cell, so khớp cell so sánh với bản tải về và quét credential. Kết quả Colab thực tế chưa được tái kiểm từ manifest/metrics trong Drive; không công bố winner cho paper.
+- Notebook hợp nhất được commit/push theo yêu cầu người dùng; xem git log để biết commit sau khi push.
+
+---
+
 # Cập nhật 23/10/2026 — screening các model người dùng yêu cầu
 
 - Người dùng gửi ảnh pilot F5 trên Colab; bảng hiển thị 8 model thành công và thiếu log_sarimax. Chưa có metrics.csv/manifest của phiên Colab để kiểm nguyên nhân hoặc công bố số trong paper.
