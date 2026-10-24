@@ -2,11 +2,11 @@
 
 Bộ bàn giao: [Bối cảnh](PROJECT_CONTEXT.md), [Hướng dẫn agent](AGENTS.md), [Hướng dẫn Claude](CLAUDE.md), [Trạng thái và bước tiếp](HANDOFF.md). Cập nhật 23/10/2026: người dùng giao triển khai/train trên Colab miễn phí. Xem [CLOUD_RUN.md](CLOUD_RUN.md).
 
-Ngày lập: 22/10/2026. Cập nhật: 23/10/2026. Trạng thái: **đã bắt đầu triển khai pilot Colab CPU; chưa có kết quả train cloud**.
+Ngày lập: 22/10/2026. Cập nhật: 24/10/2026. Trạng thái: **pilot Colab v1 có 32/36 task thành công theo artifact; pilot v2 sửa hội tụ đang chờ chạy cloud**. Xem [CLOUD_RUN.md](CLOUD_RUN.md) và [HANDOFF.md](HANDOFF.md) để biết ranh giới bằng chứng.
 
 ## 1. Yêu cầu đã chốt
 
-- Phạm vi hiện tại: triển khai pilot Colab miễn phí theo yêu cầu mới. Chưa có training cloud thành công; chưa triển khai toàn bộ 40 model.
+- Phạm vi hiện tại: triển khai pilot Colab miễn phí theo yêu cầu mới. V1 có 32/36 task thành công theo `summary.json`/`metrics.csv`; chưa triển khai toàn bộ 40 model. Cấu hình pilot v2 được sửa sau khi xem lỗi v1, không coi là kết quả đăng ký trước.
 - Paper theo hướng **survey + empirical benchmark** trên dữ liệu Retail Analytics từ DWH Databricks.
 - Code nghiên cứu và mô hình nằm trong repository riêng, không tích hợp vào hệ thống hiện tại.
 - Target: G và COGS theo ngày. G là doanh thu gộp, gồm đơn hủy, chưa trừ chiết khấu.
@@ -406,6 +406,6 @@ Nguồn tham khảo đã dùng khi lập kế hoạch:
 - [TimesFM official repository](https://github.com/google-research/timesfm), [Moirai/Uni2TS official repository](https://github.com/SalesforceAIResearch/uni2ts).
 - [Colab FAQ: môi trường, quota, persistence và giới hạn](https://research.google.com/colaboratory/faq.html).
 
-Đã làm trong giai đoạn lập kế hoạch: đọc tài liệu/SQL trong checkout, tra cứu nguồn phương pháp, chốt target/horizon/metric/phạm vi cùng người dùng, lưu tài liệu này. Đã bổ sung code/notebook pilot CPU theo yêu cầu mới; chưa export snapshot, tạo compute, chạy model hoặc có bảng kết quả mới.
+Đã làm trong giai đoạn lập kế hoạch: đọc tài liệu/SQL trong checkout, tra cứu nguồn phương pháp, chốt target/horizon/metric/phạm vi cùng người dùng, lưu tài liệu này. Pilot v1 đã được chạy trên Colab; `summary.json` và `metrics.csv` cho thấy 32/36 task thành công, bốn lượt `log_sarimax` không hội tụ. Bản v2 sửa cấu hình sau khi xem lỗi v1 và chưa được chạy cloud; chưa có kết quả benchmark đầy đủ hoặc final test.
 
 Repository GitHub độc lập do người dùng tạo đã được clone ngày 23/10/2026: https://github.com/myuyen0304/retail-sales-forecasting-research. Người dùng đã giao triển khai và chọn Colab miễn phí. Pilot CPU được chuẩn bị tại CLOUD_RUN.md; kết quả phải được xác nhận bằng artifact cloud.

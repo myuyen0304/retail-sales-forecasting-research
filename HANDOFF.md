@@ -1,3 +1,13 @@
+# Cập nhật 24/10/2026 — sửa pilot log_sarimax không hội tụ
+
+- Đã đọc trực tiếp `summary.json` và `metrics.csv` của run Colab v1 `9aec3d923136c446de27` trên Drive: 36 task, 32 success, bốn task `log_sarimax` failed với lỗi không hội tụ. Chưa tái kiểm checksum snapshot và toàn bộ prediction, không công bố winner hoặc số score cho paper.
+- Lịch F1 cũ có phụ thuộc tuyến tính chính xác `day + days_to_end = days_in_month`. Bản v2 dùng riêng sáu biến Fourier năm cho `log_sarimax`, giữ `order=(1,0,1)` và tăng `lbfgs` từ 100 lên 300 vòng. Khi vẫn không hội tụ, `error` ghi thêm số vòng lặp, mã cảnh báo và warning; không chấm điểm fit lỗi. Tên model vẫn là nhãn lịch sử, không có `seasonal_order`.
+- Đã sửa `cloud_pilot.py`, `configs/pilot_cpu.json`, `tests/test_protocol.py` và đồng bộ bản nhúng trong `notebooks/01_colab_cpu_pilot.ipynb`; cập nhật hướng dẫn/trạng thái trong `CLOUD_RUN.md`, `README.md`, `PLAN.md`. Config đổi `protocol_id` nên run v2 có định danh mới và không ghi đè v1.
+- Kiểm tra: 11/11 test protocol không fit model trên local; parse JSON/cú pháp notebook, so 5 file nhúng với file repo và `git diff --check` đều đạt. **Chưa chạy pilot v2 trên Colab; chưa xác nhận model đã hội tụ.** Bước tiếp: Upload notebook v2 từ checkout này, chạy trên Colab hosted CPU, rồi đọc `summary.json`/`metrics.csv` mới. Không train local, không ghi DWH.
+- Trạng thái commit/push của lần sửa này: commit và push lên `origin/main` theo yêu cầu ngày 24/10/2026; đối chiếu SHA bằng `git log -1` và trạng thái đồng bộ bằng `git status -sb`.
+
+---
+
 # Cập nhật 24/10/2026 — giữ lựa chọn nguồn trong notebook 01
 
 - Theo yêu cầu người dùng, notebook 01 trên GitHub giữ lại CATALOG và RELEASE_ID của lượt chạy Colab trước; hai giá trị này là định danh nguồn, không phải token.

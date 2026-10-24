@@ -1,5 +1,5 @@
 {
-  "protocol_id": "pilot-cpu-v1",
+  "protocol_id": "pilot-cpu-v2-convergence",
   "seed": 42,
   "origin": "2019-12-31",
   "horizons": [
@@ -61,7 +61,9 @@
       1
     ],
     "trend": "c",
-    "maxiter": 100
+    "method": "lbfgs",
+    "maxiter": 300,
+    "exog": "annual_fourier_3"
   },
-  "fit_note": "Pilot CPU F5; chưa tuning; chưa chấm final test; không phải benchmark đủ 40 model."
+  "fit_note": "Pilot CPU F5 v2 sau khi xem lỗi hội tụ của v1; exog Fourier 3 hài, lbfgs tối đa 300 vòng. Exploratory, chưa chấm final test hoặc benchmark đủ 40 model."
 }

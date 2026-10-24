@@ -116,6 +116,13 @@ def calendar(dates):
     return result
 
 
+def statistical_calendar(dates):
+    # Giữ sáu biến Fourier đã biết trước; lịch F1 đầy đủ có các cột phụ thuộc tuyến tính.
+    columns = [f"{kind}_{harmonic}" for harmonic in (1, 2, 3)
+               for kind in ("sin", "cos")]
+    return calendar(dates)[columns].to_numpy()
+
+
 def history_row(values, config):
     row = [values[-lag] for lag in config["lag_days"]]
     for window in config["rolling_days"]:
@@ -198,21 +205,36 @@ def fit_predict(train, future, model_name, config):
     elif model_name == "log_sarimax":
         from statsmodels.tsa.statespace.sarimax import SARIMAX
         options = config["log_sarimax"]
+        if options["exog"] != "annual_fourier_3":
+            raise ValueError("Cấu hình biến lịch của ARIMAX log không được hỗ trợ.")
+        exog_train = statistical_calendar(train.index)
+        exog_future = statistical_calendar(future)
         with warnings.catch_warnings(record=True) as observed:
             warnings.simplefilter("always")
-            estimator = SARIMAX(np.log1p(train.to_numpy()), exog=calendar(train.index).to_numpy(),
+            estimator = SARIMAX(np.log1p(train.to_numpy()), exog=exog_train,
                                 order=tuple(options["order"]), trend=options["trend"],
                                 enforce_stationarity=True, enforce_invertibility=True).fit(
-                                    disp=False, maxiter=options["maxiter"])
+                                    method=options["method"], disp=False,
+                                    maxiter=options["maxiter"], full_output=True)
         metadata["warnings"] = [str(w.message) for w in observed]
-        if not estimator.mle_retvals.get("converged", False):
-            raise RuntimeError("SARIMAX không hội tụ; ghi failed, không nhận score.")
+        optimizer = estimator.mle_retvals or {}
+        iterations = optimizer.get("iterations")
+        if not optimizer.get("converged", False):
+            raise RuntimeError(
+                "ARIMAX log không hội tụ; không chấm điểm. "
+                f"method={options['method']}, maxiter={options['maxiter']}, "
+                f"iterations={iterations if iterations is not None else 'không rõ'}, "
+                f"warnflag={optimizer.get('warnflag', 'không rõ')}, "
+                f"warnings={metadata['warnings']}"
+            )
         fit_seconds = time.perf_counter() - start
         fitted = np.expm1(np.asarray(estimator.fittedvalues))
         fitted_dates = train.index
         pred_start = time.perf_counter()
-        prediction = np.expm1(np.asarray(estimator.forecast(len(future), exog=calendar(future).to_numpy())))
-        metadata.update(input_set="F1", point="inverse_log_location", strategy="native")
+        prediction = np.expm1(np.asarray(estimator.forecast(len(future), exog=exog_future)))
+        metadata.update(input_set="F1", point="inverse_log_location", strategy="native",
+                        exog="annual_fourier_3", optimizer_method=options["method"],
+                        optimizer_iterations=int(iterations) if iterations is not None else None)
     else:
         raise ValueError("Model chưa triển khai: " + model_name)
     pred_seconds = time.perf_counter() - pred_start

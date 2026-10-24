@@ -6,7 +6,7 @@ from unittest.mock import patch
 import numpy as np
 import pandas as pd
 
-from cloud_pilot import baseline, cloud_runtime, score, supervised, validate_data
+from cloud_pilot import baseline, cloud_runtime, score, statistical_calendar, supervised, validate_data
 
 
 class ProtocolTests(unittest.TestCase):
@@ -53,6 +53,17 @@ class ProtocolTests(unittest.TestCase):
         np.testing.assert_array_equal(before[0], after[0])
         self.assertEqual(before[0][0][0], 6.0)
         self.assertEqual(before[1][0], 7.0)
+
+    def test_statistical_calendar_has_independent_known_future_columns(self):
+        train_dates = pd.date_range("2012-07-04", "2019-12-31", freq="D")
+        future_dates = pd.date_range("2020-01-01", periods=548, freq="D")
+        train_exog = statistical_calendar(train_dates)
+        future_exog = statistical_calendar(future_dates)
+        self.assertEqual(train_exog.shape, (len(train_dates), 6))
+        self.assertEqual(future_exog.shape, (548, 6))
+        self.assertEqual(np.linalg.matrix_rank(train_exog), 6)
+        self.assertTrue(np.isfinite(future_exog).all())
+        np.testing.assert_array_equal(future_exog[0], statistical_calendar([future_dates[0]])[0])
 
 
 if __name__ == "__main__":

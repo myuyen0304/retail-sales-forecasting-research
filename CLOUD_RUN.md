@@ -1,20 +1,20 @@
 # Chạy pilot CPU trên cloud
 
-Cập nhật 23/10/2026: người dùng đã giao bắt đầu triển khai và huấn luyện cloud. Đã chuẩn bị code pilot; **chưa có lượt train cloud được xác nhận thành công**.
+Cập nhật 24/10/2026: đã đọc `summary.json` và `metrics.csv` của pilot Colab v1: 32/36 task thành công, bốn lượt `log_sarimax` không hội tụ. Đã chuẩn bị pilot v2 để chạy lại; **chưa có kết quả Colab của v2**. Chưa tái kiểm checksum snapshot và toàn bộ prediction của v1.
 
 ## Phạm vi pilot
 
 - F5, origin 31/12/2019; H=30 và H=548; hai target G/COGS.
 - Sáu baseline, Ridge, LightGBM, log-SARIMAX: 36 đơn vị đánh giá development.
 - Final test vẫn đóng; chưa triển khai đủ 40 model, DL/GPU hoặc foundation models.
-- Tham số được đăng ký trong configs/pilot_cpu.json trước khi có điểm.
+- Tham số v1 được đăng ký trước khi có điểm. Cấu hình v2 trong `configs/pilot_cpu.json` được sửa sau khi đã xem lỗi hội tụ v1, nên kết quả v2 phải ghi rõ là exploratory.
 - Training bị chặn nếu runner không nhận ra runtime Colab/Databricks.
 - Snapshot actual phải đủ contract và có manifest/checksum.
 - Lưu model.joblib, predictions.csv, fitted.csv nếu có, plot.png và status.json theo từng task.
 - Resume chỉ dùng task success khi checksum artifact khớp; task hỏng/dở sẽ chạy lại.
 - metrics.csv và summary.json không tự biến một pilot thành kết quả cuối của paper.
 - Thời gian pilot chỉ có fit/predict; chưa có benchmark latency nhiều lần, đo RAM/VRAM hoặc timeout cưỡng chế theo task.
-- Chưa khóa khả năng tương thích runtime thực tế; requirements là cấu hình đề xuất cần xác nhận bằng pilot cloud.
+- Runtime v1 đã tạo artifact trên Colab; khả năng hội tụ và thời gian chạy của cấu hình v2 vẫn cần xác nhận trên cloud.
 
 ## Screening model CPU/GPU sau pilot
 
@@ -31,6 +31,12 @@ Bộ CPU dùng F1 (lag/rolling + lịch) cho model cây; ARIMAX/SARIMAX dùng s�
 ### Ghi chú tên model pilot cũ
 
 Tên log_sarimax trong pilot 01 được giữ để truy nguồn kết quả lịch sử, nhưng code cũ không truyền seasonal_order. Về mặt cấu hình, nó là mô hình ARIMAX trên log với biến lịch; không được dùng như kết quả SARIMA theo mùa. Bảng pilot cũ lọc status=success nên model lỗi không hiện; mở metrics.csv và xem các dòng status khác success. Các notebook mới hiển thị cả lỗi.
+
+### Chạy lại pilot v2 sau lỗi hội tụ
+
+- Trong v1, cả bốn task `log_sarimax` trả `converged=False`. Lịch F1 cũ có phụ thuộc tuyến tính chính xác: `day + days_to_end = days_in_month`. V2 dùng riêng sáu biến Fourier năm cho model thống kê, giữ `order=(1,0,1)` và tăng giới hạn `lbfgs` từ 100 lên 300 vòng. Đây là cách giảm một nguyên nhân có thể gây khó hội tụ; chưa khẳng định sẽ hội tụ trên Colab.
+- Notebook v2 nhúng code, config và test mới. Upload bản notebook ở checkout hiện tại, chạy từ đầu trên Colab hosted CPU. Snapshot cũ được đọc lại với manifest/checksum; code và config mới tạo run ID khác nên giữ nguyên run v1. Nếu mở từ GitHub, cần bảo đảm commit chứa v2 đã được push trước.
+- Sau khi chạy, xem `summary.json` và các dòng `log_sarimax` trong `metrics.csv`. Nếu vẫn `failed`, cột `error` mới ghi method, số vòng lặp, mã cảnh báo và warning để điều tra tiếp. Không tính điểm cho fit chưa hội tụ; không ghép v1 và v2 thành một run.
 
 ## Colab
 

@@ -2,7 +2,7 @@
 
 Nghiên cứu độc lập về dự báo **doanh thu gộp G và giá vốn COGS theo ngày**, theo hướng survey và benchmark nhiều họ mô hình.
 
-**Trạng thái ngày 23/10/2026:** đã chuẩn bị pilot CPU trên Colab miễn phí. Người dùng đã gửi ảnh pilot F5 trên Colab; artifact và manifest của lượt đó chưa được kiểm. Xem [CLOUD_RUN.md](CLOUD_RUN.md) và [notebook Colab](notebooks/01_colab_cpu_pilot.ipynb).
+**Trạng thái ngày 24/10/2026:** đã đọc `summary.json` và `metrics.csv` của pilot Colab v1: 32/36 task thành công, bốn lượt `log_sarimax` không hội tụ. Đã chuẩn bị bản v2 để chạy lại trên Colab; chưa có kết quả v2 hoặc kiểm đầy đủ snapshot/prediction. Xem [CLOUD_RUN.md](CLOUD_RUN.md) và [notebook Colab](notebooks/01_colab_cpu_pilot.ipynb).
 
 ## Lượt screening các model được yêu cầu
 
