@@ -1,7 +1,15 @@
+# Cập nhật 24/10/2026 — giữ lựa chọn nguồn trong notebook 01
+
+- Theo yêu cầu người dùng, notebook 01 trên GitHub giữ lại CATALOG và RELEASE_ID của lượt chạy Colab trước; hai giá trị này là định danh nguồn, không phải token.
+- Token tiếp tục nhập qua getpass, không ghi vào source/output. Không huấn luyện lại hoặc đổi snapshot trong lần sửa này.
+- Đã kiểm JSON, cú pháp cell, không có output và quét mẫu credential; commit/push được báo qua git log.
+
+---
+
 # Cập nhật 24/10/2026 — hợp nhất notebook Colab người dùng tải về
 
 - Người dùng cung cấp notebook 01 đã chạy trên Colab. Bản tải về có cell so sánh MAE/biểu đồ do người dùng thêm, output lớn và một credential nằm trong source.
-- Đã đưa riêng cell so sánh vào bản notebook 01 mới nhất của repo. Giữ chú thích giới hạn pilot, bảng lỗi, Colab badge và code export có getpass. Không đưa credential, giá trị nguồn đã điền, execution output hoặc ảnh nhúng lên Git.
+- Đã đưa riêng cell so sánh vào bản notebook 01 mới nhất của repo. Giữ chú thích giới hạn pilot, bảng lỗi, Colab badge và code export có getpass. Không đưa credential, execution output hoặc ảnh nhúng lên Git. CATALOG và RELEASE_ID được khôi phục theo yêu cầu ngày 24/10/2026.
 - Kiểm notebook JSON/cú pháp cell, so khớp cell so sánh với bản tải về và quét credential. Kết quả Colab thực tế chưa được tái kiểm từ manifest/metrics trong Drive; không công bố winner cho paper.
 - Notebook hợp nhất được commit/push theo yêu cầu người dùng; xem git log để biết commit sau khi push.
 
