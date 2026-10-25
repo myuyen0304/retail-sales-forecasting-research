@@ -1,43 +1,59 @@
 # retail-sales-forecasting-research
 
-Nghiên cứu độc lập về dự báo **doanh thu gộp G và giá vốn COGS theo ngày**, theo hướng survey và benchmark nhiều họ mô hình.
+Benchmark dự báo **doanh thu (Revenue) và giá vốn (COGS) theo ngày** cho paper NCKH (viết bằng tiếng Anh).
+Paper so sánh 9 model (ARIMA, SARIMA, SARIMAX, Prophet, Random Forest, Gradient Boosting, XGBoost, LightGBM, RNN, LSTM), 2 baseline và 3 cách ensemble.
+Dữ liệu gồm 4 chuỗi: TOTAL và 3 vùng (multi-region).
 
-**Trạng thái ngày 24/10/2026:** đã đọc `summary.json` và `metrics.csv` của pilot Colab v1: 32/36 task thành công, bốn lượt `log_sarimax` không hội tụ. Đã chuẩn bị bản v2 để chạy lại trên Colab; chưa có kết quả v2 hoặc kiểm đầy đủ snapshot/prediction. Xem [CLOUD_RUN.md](CLOUD_RUN.md) và [notebook Colab](notebooks/01_colab_cpu_pilot.ipynb).
+- **Thiết kế thực nghiệm (đóng băng):** [protocol.md](protocol.md). Đọc trước khi sửa code.
+- **Trạng thái và bước tiếp:** [HANDOFF.md](HANDOFF.md).
+- **Bản cũ do GPT dựng** (export Databricks, 40 model, chạy Colab): tag `legacy-gpt-pilot`, nhánh `legacy/gpt-pilot`.
 
-## Lượt screening các model được yêu cầu
+## Cài đặt (laptop Windows hoặc Linux, CPU là đủ)
 
-Sau pilot CPU, dùng [notebook CPU](notebooks/02_colab_cpu_screening.ipynb) cho Random Forest, Extra Trees, XGBoost, LightGBM, CatBoost, ARIMA, ARIMAX, SARIMA và SARIMAX. Dùng [notebook GPU](notebooks/03_colab_gpu_screening.ipynb) cho Simple RNN và LSTM. Cả hai notebook đọc lại snapshot actual đã export trên Drive, mặc định chạy F5 rồi có thể chuyển sang năm fold. [Notebook so sánh](notebooks/04_colab_compare_screening.ipynb) chỉ ghép hai run cùng snapshot và cùng tập fold/horizon.
+```bash
+uv venv .venv --python 3.13
+uv pip install --python .venv/Scripts/python.exe -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
+uv pip install --python .venv/Scripts/python.exe -e .
+```
 
-Hướng dẫn chi tiết ở [CLOUD_RUN.md](CLOUD_RUN.md). Đây là code chuẩn bị để người dùng chạy trên Colab; chưa có bằng chứng kết quả đầy đủ, chưa là benchmark 40 model hay final test. Model log_sarimax trong pilot cũ là tên lịch sử chưa chuẩn: cấu hình cũ không khai báo seasonal_order; lượt mới dùng bốn tên ARIMA/ARIMAX/SARIMA/SARIMAX theo đúng cấu hình.
+## Dữ liệu (không có trong git)
 
-## Bắt đầu đọc
+Chép 6 file CSV Datathon vào `data/raw/`: `sales`, `orders`, `order_items`, `products`, `geography`, `promotions`. Sau đó chạy:
 
-| File | Vai trò |
+```bash
+.venv/Scripts/python.exe -m rsf.data      # → data/processed/daily_series.csv + promotions.csv, tự kiểm 3 vùng cộng về TOTAL
+```
+
+Lên Colab chỉ cần upload 2 file trong `data/processed/`. Xem [notebooks/colab_run.ipynb](notebooks/colab_run.ipynb).
+
+## Chạy thực nghiệm
+
+Thứ tự bắt buộc: `tune` → `cv` → (khóa giao thức) → `test`. Mỗi task ghi một file, nên chạy lại sẽ bỏ qua task đã xong.
+
+```bash
+PY=.venv/Scripts/python.exe
+$PY -m pytest -q                                          # kiểm giao thức (rò rỉ, split, metric)
+$PY -m rsf.run tune --models main --jobs 3                # lưới tham số trên TOTAL/revenue → results/best_params.json
+$PY -m rsf.run cv   --models all  --jobs 3                # 4 chuỗi × 2 target × 4 fold
+$PY scripts/make_tables.py && $PY scripts/make_figures.py # bảng + hình CV
+$PY -m rsf.run test --models all  --jobs 3                # CHỈ chạy sau khi đã chọn phương pháp đề xuất trên CV
+$PY scripts/make_tables.py --test && $PY scripts/make_figures.py --test
+```
+
+Trên console Windows, nếu lỗi in tiếng Việt thì đặt `PYTHONUTF8=1`. Đổi thư mục kết quả bằng biến môi trường `RSF_RESULTS_DIR`.
+
+## Cấu trúc
+
+| Đường dẫn | Vai trò |
 |---|---|
-| [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) | Bối cảnh, quyết định, target, dữ liệu và giới hạn bằng chứng |
-| [PLAN.md](PLAN.md) | Kế hoạch chi tiết: survey, 40 model, split/CV, metric, cloud, biểu đồ |
-| [HANDOFF.md](HANDOFF.md) | Việc đã làm, chưa làm, điểm còn thiếu và bước tiếp |
-| [AGENTS.md](AGENTS.md) | Quy tắc làm việc chung cho coding agent |
-| [CLAUDE.md](CLAUDE.md) | Điểm vào cho Claude, sử dụng cùng quy tắc AGENTS.md |
-
-## Dành cho phiên Codex hoặc Claude mới
-
-Đọc AGENTS.md → PROJECT_CONTEXT.md → PLAN.md → HANDOFF.md trước khi sửa. Claude đọc thêm CLAUDE.md. Không cần cuộc trò chuyện cũ hoặc checkout hệ thống chính để hiểu dự án.
-
-Người dùng đã giao triển khai và huấn luyện trên Colab miễn phí. Chưa có ngân sách thuê tài nguyên; không train local.
-
-## Phạm vi nghiên cứu
-
-- Hai target G/COGS theo ngày; horizon 7, 30, 90, 365, 548 ngày.
-- Khoảng 80 phương pháp/biến thể survey; thiết kế 40 ứng viên thực nghiệm.
-- Metric bắt buộc MAE, MAPE, Relative Squared Error (RSE không căn).
-- Đánh giá theo thời gian; có so sánh chi phí tính toán và biểu đồ train/test/CV.
-- Colab CPU/GPU hoặc VM cloud; không train trên máy cá nhân.
-
-## Ranh giới dữ liệu và hệ thống
-
-Databricks chỉ cung cấp snapshot actual qua kết nối chỉ đọc khi triển khai. Code, môi trường và artifact nghiên cứu thuộc repo này; không import code hệ thống Retail Analytics hoặc ghi kết quả vào production.
-
-Dữ liệu, secrets và checkpoint không đưa vào Git. Notebook Colab tự chứa bộ chạy pilot; không cần push repo để tải notebook lên và chạy.
-
-Repository: https://github.com/myuyen0304/retail-sales-forecasting-research
+| `src/rsf/data.py` | Dựng chuỗi TOTAL + 3 vùng từ CSV gốc, kiểm khớp |
+| `src/rsf/features.py` | Biến lịch, khuyến mãi, chế độ (chống rò rỉ theo origin) |
+| `src/rsf/splits.py` | 4 fold CV + test |
+| `src/rsf/models/` | baseline, thống kê (ARIMA/SARIMA/SARIMAX/Prophet), cây, RNN/LSTM |
+| `src/rsf/grids.py` | Lưới tham số |
+| `src/rsf/ensemble.py`, `results.py` | Ensemble, bottom-up, COGS qua tỷ lệ, đọc dự báo |
+| `src/rsf/run.py` | CLI chạy tune / cv / test |
+| `scripts/make_tables.py`, `make_figures.py` | Nguồn duy nhất của mọi bảng/hình trong paper |
+| `results/` | `tables/`, `figures/`, `best_params.json`, `tuning/`, `runs_*.csv` (commit); `preds/` (không commit) |
+| `paper/` | `refs.bib` (DOI đã kiểm), `literature_matrix.csv`, bản thảo |
+| `tests/` | Test giao thức |
