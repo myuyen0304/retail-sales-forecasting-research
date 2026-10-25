@@ -71,4 +71,4 @@ Bản GPT giữ ở tag `legacy-gpt-pilot` và nhánh `legacy/gpt-pilot`, chỉ 
 
 Không chạy thử các phần này trên vùng test thật. Khi đến lúc chạy test mà gặp lỗi, chỉ cần sửa script rồi dựng lại bảng từ dự báo đã lưu, không phải chạy lại model.
 
-**Commit/push:** chưa commit. File cũ đã `git rm` (đang staged), file mới chưa stage.
+**Commit/push:** 2026-10-25 đã commit trên `main` ở local, mỗi file một commit (sau c370252). Chưa push, kể cả tag và nhánh legacy.
