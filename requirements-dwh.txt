@@ -1,0 +1,2 @@
+# Chỉ cần cho scripts/extract_dwh.py (trích data từ DWH Databricks). Colab và thực nghiệm không cần.
+databricks-sdk==0.117.0
