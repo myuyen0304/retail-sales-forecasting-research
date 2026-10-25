@@ -64,6 +64,12 @@ Bản GPT giữ ở tag `legacy-gpt-pilot` và nhánh `legacy/gpt-pilot`, chỉ 
 3. Đọc bảng CV, chốt phương pháp đề xuất, rồi mới chạy `test` một lần.
 4. Đọc bản đầy đủ các bài trong `literature_matrix.csv` (cột status) và viết research gap.
 5. Chưa làm model global cho RQ4 (một LightGBM chung 3 vùng). Hiện RQ4 chỉ so bottom-up với trực tiếp.
+6. Viết vào `paper/main.tex` các phần không cần số: Methodology, Experimental setup, nháp Introduction/Related Works. Nguồn là `protocol.md` và `refs.bib`.
+
+**Thứ tự chạy đã thống nhất (2026-10-25):**
+- Chạy trước phần nhanh, khoảng 1 giờ: `cv --models baselines,main,ablation --jobs 3`. Ở lần này RNN/LSTM dùng tham số mặc định.
+- Sau đó chạy `tune --models rnn,lstm`, rồi `cv --models rnn,lstm`, rồi `cv --models pure --seeds 3`, rồi chạy `make_tables.py` và `make_figures.py`.
+- Nếu paper điểm cộng sát hạn, có thể bỏ phần `pure` của mạng nơ-ron (`rnn_ar`, `lstm_ar`). Người dùng chưa cho biết hạn nộp.
 
 **Code chưa từng chạy:**
 - `notebooks/colab_run.ipynb`;
