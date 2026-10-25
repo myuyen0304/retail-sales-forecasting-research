@@ -66,13 +66,23 @@ Bản GPT giữ ở tag `legacy-gpt-pilot` và nhánh `legacy/gpt-pilot`, chỉ 
 5. Chưa làm model global cho RQ4 (một LightGBM chung 3 vùng). Hiện RQ4 chỉ so bottom-up với trực tiếp.
 6. Viết vào `paper/main.tex` các phần không cần số: Methodology, Experimental setup, nháp Introduction/Related Works. Nguồn là `protocol.md` và `refs.bib`.
 
-**Thứ tự chạy đã thống nhất (2026-10-25):**
-- Chạy trước phần nhanh, khoảng 1 giờ: `cv --models baselines,main,ablation --jobs 3`. Ở lần này RNN/LSTM dùng tham số mặc định.
-- Sau đó chạy `tune --models rnn,lstm`, rồi `cv --models rnn,lstm`, rồi `cv --models pure --seeds 3`, rồi chạy `make_tables.py` và `make_figures.py`.
-- Nếu paper điểm cộng sát hạn, có thể bỏ phần `pure` của mạng nơ-ron (`rnn_ar`, `lstm_ar`). Người dùng chưa cho biết hạn nộp.
+**Thứ tự chạy đã thống nhất (2026-10-25, chia laptop và Colab):**
+- **Laptop**, model thống kê và cây:
+  - `cv --models baselines,arima,sarima,sarimax,prophet,rf,gb,xgboost,lightgbm,ablation --jobs 3`
+  - `cv --models sarima_w7,prophet_pure,rf_lag,gb_lag,xgboost_lag,lightgbm_lag --jobs 3`
+- **Colab**, mạng nơ-ron, chạy bằng `notebooks/colab_run.ipynb`, trình tự:
+  - `tune --models rnn,lstm`;
+  - `cv --models rnn,lstm` (5 seed);
+  - `cv --models rnn_ar,lstm_ar --seeds 3`.
+
+  Kết quả ghi vào Drive `MyDrive/rsf/results`. Gộp về laptop bằng `scripts/merge_colab.py <thư mục results tải về>`: chạy không có cờ để xem trước, rồi chạy thêm `--apply`.
+- Gộp xong mới chạy `make_tables.py` và `make_figures.py` trên laptop.
+- **Bẫy:** `cv` bỏ qua task đã có file trong `preds/` mà không kiểm tham số. Đừng chạy `--models main` trước khi tune RNN/LSTM. Đổi tham số của model nào thì phải xóa `results/preds/cv/<model>/` và các dòng của model đó trong `runs_cv.csv` rồi mới chạy lại.
+- Ghi trong paper rằng RNN/LSTM chạy trên Colab với phiên bản thư viện khác; chi tiết ở `env_*.json`.
+- Nếu paper điểm cộng sát hạn, có thể bỏ `rnn_ar` và `lstm_ar`. Người dùng chưa cho biết hạn nộp.
 
 **Code chưa từng chạy:**
-- `notebooks/colab_run.ipynb`;
+- `notebooks/colab_run.ipynb`: viết lại ngày 2026-10-25, chỉ chạy phần mạng nơ-ron. Code mới kiểm trên pandas 3.1, còn Colab dùng pandas 2.x;
 - nhánh `--test` của `make_tables.py` / `make_figures.py` (T7, F10, F11).
 
 Không chạy thử các phần này trên vùng test thật. Khi đến lúc chạy test mà gặp lỗi, chỉ cần sửa script rồi dựng lại bảng từ dự báo đã lưu, không phải chạy lại model.
