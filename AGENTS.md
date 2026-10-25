@@ -2,6 +2,15 @@
 
 Đọc theo thứ tự: [README.md](README.md) → [protocol.md](protocol.md) → [HANDOFF.md](HANDOFF.md).
 
+## Người dùng và mục tiêu
+
+- Người dùng là PM/BA của khóa luận Retail Analytics (Datathon 2026). Paper này người dùng tự viết để lấy điểm cộng. Trả lời người dùng bằng tiếng Việt.
+- Paper viết bằng tiếng Anh, theo template của người dùng, khung ở `paper/main.tex`:
+  - mục 3: benchmark 9 model, RMSE/MAE/MAPE, train/val/test, Time Series CV;
+  - mục 4.1–4.5: Abstract → Results.
+- Người dùng đã chốt dùng chuỗi TOTAL + 3 vùng. Trong paper gọi là "multi-region", không gọi "multi-store", vì dữ liệu không có cửa hàng.
+- Bản GPT trước không rút được kết luận (lý do ghi trong HANDOFF). Bản đó giữ ở tag `legacy-gpt-pilot`; không dựng lại.
+
 ## Phạm vi
 
 - Repo độc lập, phục vụ paper NCKH. Không import code, không sửa hệ thống Retail Analytics.
@@ -21,5 +30,5 @@
 
 - Tài liệu repo và comment viết tiếng Việt; định danh code tiếng Anh; paper (`paper/`) viết tiếng Anh.
 - Commit message: tiếng Việt không dấu, một dòng. Không thêm dòng `Co-Authored-By`.
-- `git add` từng file cụ thể. Không commit `data/` hay `results/preds/`.
+- `git add` từng file cụ thể, mỗi file một commit. Không commit `data/` hay `results/preds/`. Push do người dùng tự gõ.
 - Kết thúc một việc: cập nhật [HANDOFF.md](HANDOFF.md) (ngày, việc đã làm, bằng chứng, bước tiếp).
