@@ -8,6 +8,8 @@ Số epoch chọn bằng early stopping trên 10% cuối của train, rồi fit 
 """
 from __future__ import annotations
 
+import os
+
 import numpy as np
 import pandas as pd
 
@@ -15,6 +17,8 @@ from rsf.models.base import Forecaster
 
 DEFAULTS = dict(lookback=28, hidden=32, layers=1, lr=1e-3, batch=64, max_epochs=300, patience=25,
                 holdout=0.1, dropout=0.0)
+# Số luồng torch cho mỗi tiến trình. Laptop 12 lõi, --jobs 3: để 4. Colab 2 lõi, --jobs 2: đặt 1.
+THREADS = int(os.environ.get("RSF_TORCH_THREADS", 4))
 
 
 def _net(cell: str, n_in: int, hidden: int, layers: int, dropout: float):
@@ -41,7 +45,7 @@ def _train(cell, X, y, p, seed, epochs=None):
     import torch
     torch.manual_seed(seed)
     np.random.seed(seed)
-    torch.set_num_threads(4)
+    torch.set_num_threads(THREADS)
     Xt, yt = torch.tensor(X, dtype=torch.float32), torch.tensor(y, dtype=torch.float32)
     if epochs is None:
         cut = int(len(X) * (1 - p["holdout"]))
