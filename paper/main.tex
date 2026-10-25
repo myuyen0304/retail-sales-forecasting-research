@@ -1,0 +1,114 @@
+% Bản thảo paper. Số liệu ở mục Results lấy từ results/tables/*.csv; chỗ \todo{} là chưa có số.
+\documentclass[conference]{IEEEtran}
+\usepackage{graphicx,booktabs,amsmath,url,xcolor}
+\usepackage[hidelinks]{hyperref}
+\newcommand{\todo}[1]{\textcolor{red}{[TODO: #1]}}
+\graphicspath{{../results/figures/}}
+
+\begin{document}
+% Tiêu đề tạm: vế đầu là giả thuyết H2, chỉ giữ nếu kết quả CV/test ủng hộ
+\title{Calendar Information Matters More Than Model Class: A Benchmark of Statistical, Machine Learning and Deep Learning Models for Daily Multi-Region Retail Revenue Forecasting}
+\author{\IEEEauthorblockN{\todo{authors}}\IEEEauthorblockA{\todo{affiliation}}}
+\maketitle
+
+% ---------------------------------------------------------------- 4.1
+\begin{abstract}
+Accurate daily revenue forecasts support inventory, staffing and financial planning in retail, yet published comparisons of forecasting models often differ in data, horizons and inputs, which makes their conclusions hard to transfer.
+This study benchmarks nine widely used models---ARIMA, SARIMA, SARIMAX, Prophet, Random Forest, Gradient Boosting, XGBoost, LightGBM, RNN and LSTM---together with seasonal-naive baselines and three forecast-combination schemes, on daily revenue and cost of goods sold (COGS) of an e-commerce retailer, aggregated to a national total and three regions (3{,}833 days, 2012--2022).
+All models receive the same calendar, promotion and regime covariates, and each is also run in a ``pure'' autoregressive form to isolate the value of this information.
+Models are tuned and compared with four-fold expanding-window time-series cross-validation and evaluated once on an 18-month hold-out test set using RMSE, MAE and MAPE, with Diebold--Mariano and Friedman--Nemenyi tests.
+\todo{main results: best model, gain over baseline, ablation gain, ensemble gain}.
+\todo{contribution sentence}.
+\end{abstract}
+
+\begin{IEEEkeywords}
+retail sales forecasting, time series cross-validation, gradient boosting, LSTM, forecast combination, calendar effects
+\end{IEEEkeywords}
+
+% ---------------------------------------------------------------- 4.2
+\section{Introduction}
+Forecasting total sales is a routine but consequential task in retail: daily forecasts drive replenishment, workforce scheduling and cash-flow planning, and their errors propagate into stock-outs, waste and missed revenue~\cite{fildes2022retail}.
+Large forecasting competitions on retail data, such as M5 on Walmart sales~\cite{makridakis2022m5}, have shown the strength of tree-based machine learning, while many applied studies report conflicting winners among ARIMA, Prophet, LSTM and gradient boosting~\cite{hasan2022comparative,ensafi2022seasonal,hobor2026comparative}.
+
+Daily retail revenue is hard to forecast over long horizons for several reasons that appear together in our data: strong annual seasonality, intra-month patterns, promotion campaigns that recur on fixed calendar dates (some only in odd years), and a structural break that lowers the level of the series by about 40\%.
+Data from multiple regions add a further question: whether to forecast the total directly or to aggregate regional forecasts~\cite{hyndman2011hierarchical}.
+
+\todo{limitations of existing comparisons: different inputs per model; short horizons; recursive strategies; single split; no significance testing}.
+
+The objectives of this study are to
+(i) compare nine forecasting models from three families under one protocol for horizons up to 18 months;
+(ii) measure how much of the accuracy comes from known-in-advance calendar information rather than from model class;
+(iii) evaluate whether forecast combination improves on the best single model; and
+(iv) compare direct and bottom-up forecasting of the total from three regional series.
+\todo{contributions list after results}.
+
+% ---------------------------------------------------------------- 4.3
+\section{Related Work}
+\subsection{Statistical models}
+ARIMA-type models remain the reference for univariate forecasting; for long seasonal periods such as daily data with annual seasonality, Fourier terms with ARMA errors (dynamic harmonic regression) are the practical form of seasonal ARIMA~\cite{hyndman2021fpp3}.
+Prophet decomposes a series into trend, seasonality and holiday effects~\cite{taylor2018prophet}.
+\subsection{Machine learning}
+Random forests~\cite{breiman2001rf} and gradient boosting~\cite{friedman2001gbm}, with its scalable implementations XGBoost~\cite{chen2016xgboost} and LightGBM~\cite{ke2017lightgbm}, are now standard for retail demand forecasting~\cite{januschowski2022trees,makridakis2022m5,spiliotis2020sku}.
+Calendar-related special days are a key input for daily retail demand~\cite{huber2020calendric}.
+\subsection{Deep learning}
+Recurrent networks~\cite{elman1990rnn} and LSTM~\cite{hochreiter1997lstm} have been applied to sales forecasting~\cite{bandara2019lstm}; a review of RNNs for forecasting is given in~\cite{hewamalage2021rnn}.
+\subsection{Forecast combination and evaluation}
+Combining forecasts dates back to~\cite{bates1969combination}; see~\cite{clemen1989combining,wang2023combinations} for reviews and~\cite{wolpert1992stacked} for stacking.
+For time series, cross-validation must respect temporal order~\cite{tashman2000outofsample,bergmeir2012cv,bergmeir2018cv}; forecast accuracy comparisons can be tested with the Diebold--Mariano test~\cite{diebold1995dm,harvey1997hln} and, across many problems, with Friedman--Nemenyi ranks~\cite{demsar2006statistical}.
+\subsection{Research gap}
+\todo{write after reading full texts in literature\_matrix.csv: few studies give all model families the same covariates, use long horizons with direct (non-recursive) strategies, and test significance}.
+
+% ---------------------------------------------------------------- 4.4
+\section{Methodology}
+\subsection{Data}
+The dataset contains order-level transactions of an online retailer released for Datathon 2026 \todo{describe retailer, product range and data licence}.
+Daily revenue is $\sum$ quantity $\times$ unit price and COGS is $\sum$ quantity $\times$ unit cost, over all orders of a day.
+Orders are mapped to three regions (East, Central, West) through the customer's postal code; the three regional series sum exactly to the national total.
+Each series covers 3{,}833 consecutive days (4 July 2012--31 December 2022) with no missing or non-positive values (Fig.~\ref{fig:series}).
+
+\begin{figure}[t]\centering
+\includegraphics[width=\columnwidth]{F01_series.pdf}
+\caption{Daily revenue and COGS (30-day mean) for the total and three regions. Shaded: odd-year August promotion; dashed: regime shift (2019).}\label{fig:series}
+\end{figure}
+
+\subsection{Covariates}
+All covariates are known at forecast time: annual Fourier terms ($K=5$), day-of-month and end/start-of-month indicators, month, odd-year indicator, flags for six recurring promotions (learned only from promotions that started before the forecast origin), and a post-2019 regime indicator once at least 180 days after the break are observed.
+
+\subsection{Models}
+\todo{table: model, family, input, strategy, tuned hyperparameters (from protocol.md \S5--6 and results/best\_params.json)}.
+
+\subsection{Evaluation protocol}
+Four expanding-window folds with 365-day validation windows (origins mid-2017 to mid-2020) are used for tuning, model comparison and ensemble weights; the test set (1 July 2021--31 December 2022, 549 days) is forecast once from a single origin (Fig.~\ref{fig:splits}).
+Errors are measured by RMSE, MAE and MAPE on the original scale.
+
+\begin{figure}[t]\centering
+\includegraphics[width=\columnwidth]{F03_splits.pdf}
+\caption{Expanding-window cross-validation folds and hold-out test set.}\label{fig:splits}
+\end{figure}
+
+\subsection{Forecast combination}
+Majority voting applies to classification; its regression analogue is forecast averaging. We evaluate the equal-weight average of the three best models, inverse-MAE weighting, and non-negative stacking on out-of-fold forecasts, with weights learned only from earlier folds.
+
+% ---------------------------------------------------------------- 4.5
+\section{Experiments and Results}
+\subsection{Setup}
+\todo{hardware, library versions from results/env\_*.json, runtime table T8}.
+\subsection{Cross-validation results}
+\todo{Table T1, Fig. F04, F05}.
+\subsection{Value of calendar information}
+\todo{Table T2, Fig. F06}.
+\subsection{Forecast combination}
+\todo{T1 ensemble rows}.
+\subsection{Multi-region: direct vs. bottom-up}
+\todo{T4, Fig. F09}.
+\subsection{Test-set results}
+\todo{T1 test columns, T7 DM tests, Fig. F10, F11}.
+\subsection{Discussion}
+\todo{error by lead time (F08), odd-year August (T6), COGS direct vs ratio (T5), limitations: single retailer, retrospective benchmark}.
+
+\section{Conclusion}
+\todo{}
+
+\bibliographystyle{IEEEtran}
+\bibliography{refs}
+\end{document}
