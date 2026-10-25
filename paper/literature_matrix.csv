@@ -1,0 +1,14 @@
+key,year,type,data,models,metrics,finding_verified,status
+makridakis2022m5,2022,competition,"Walmart hierarchical unit sales, 42,840 series",many,"WRMSSE","Bài tổng kết cuộc thi M5 trên dữ liệu bán lẻ phân cấp; chi tiết model thắng cần đọc bản đầy đủ",đọc full text
+fildes2022retail,2022,review,retail,survey,-,"Bài tổng quan dự báo bán lẻ: nghiên cứu và thực hành",đọc full text
+huber2020calendric,2020,empirical,daily retail demand,ML,-,"Tiêu đề nhấn mạnh ngày đặc biệt theo lịch trong dự báo bán lẻ theo ngày, gần nhất với hướng biến lịch của paper",đọc full text
+hasan2022comparative,2022,empirical,Walmart (M5),"ARIMA, Prophet, LightGBM",-,"Theo kết quả tìm kiếm: ARIMA chính xác hơn Prophet và LightGBM; LightGBM rẻ hơn nhiều về tính toán",kiểm lại trong bản PDF
+ensafi2022seasonal,2022,empirical,seasonal furniture sales,"SARIMA, Prophet, LSTM, CNN, ...",-,"Theo kết quả tìm kiếm: stacked LSTM tốt nhất, Prophet và CNN cũng tốt",kiểm lại trong bài
+hobor2026comparative,2026,empirical,brick-and-mortar retail,"statistical baselines, XGBoost, LightGBM, N-BEATS, N-HiTS, TFT",RMSE,"Theo kết quả tìm kiếm: XGBoost có RMSE thấp nhất; chọn model theo đặc điểm bài toán hơn là độ phức tạp kiến trúc",kiểm lại trong bài
+albassam2026tree,2026,empirical,Rossmann,"tree-based ensembles","-","Theo kết quả tìm kiếm: cây ensemble vượt deep learning; biến mùa vụ và khuyến mãi là biến quan trọng",kiểm lại trong bài
+theodoridis2025lstmixer,2025,empirical,retail demand,"deep neural networks, LSTMixer",-,"So sánh mạng nơ-ron sâu, đề xuất LSTMixer (mở rộng model tuyến tính)",đọc full text
+qureshi2024rossmann,2024,empirical,Rossmann + weather,"GRU, LSTM",-,"Theo kết quả tìm kiếm: GRU + grid search tốt hơn LSTM đề xuất trước đó",kiểm lại trong bài
+retail2023multivariate,2023,empirical,retail multivariate,-,-,"So sánh cho chuỗi thời gian nhiều biến trong bán lẻ",đọc full text
+spiliotis2020sku,2020,empirical,daily SKU demand,"statistical vs ML",-,"So sánh thống kê và ML cho nhu cầu SKU theo ngày",đọc full text
+zeng2023transformers,2023,methodology,LTSF benchmarks,"Transformers vs linear",MSE/MAE,"Đặt câu hỏi về hiệu quả Transformer trong dự báo dài hạn",đọc full text
+wang2023combinations,2023,review,-,forecast combination,-,"Tổng quan 50 năm kết hợp dự báo",đọc full text
