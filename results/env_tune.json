@@ -1,0 +1,38 @@
+[
+  {
+    "python": "3.13.5",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "cpu_count": 12,
+    "colab": false,
+    "packages": {
+      "numpy": "2.5.4",
+      "pandas": "3.1.0",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "statsmodels": "0.15.0",
+      "lightgbm": "4.7.0",
+      "xgboost": "3.4.1",
+      "prophet": "1.5.0",
+      "torch": "2.14.1+cpu"
+    },
+    "time": "2026-10-24T23:45:59"
+  },
+  {
+    "python": "3.13.5",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "cpu_count": 12,
+    "colab": false,
+    "packages": {
+      "numpy": "2.5.4",
+      "pandas": "3.1.0",
+      "scipy": "1.18.1",
+      "scikit-learn": "1.9.1",
+      "statsmodels": "0.15.0",
+      "lightgbm": "4.7.0",
+      "xgboost": "3.4.1",
+      "prophet": "1.5.0",
+      "torch": "2.14.1+cpu"
+    },
+    "time": "2026-10-24T23:51:12"
+  }
+]
