@@ -1,70 +1,79 @@
-"""Kiểm contract/metric/feature; không fit model và không cần dữ liệu thật."""
-import os
-import unittest
-from unittest.mock import patch
-
+"""Kiểm giao thức: dữ liệu khớp, split không chồng test, không rò rỉ, metric đúng. Không fit model nặng."""
 import numpy as np
 import pandas as pd
+import pytest
+from sklearn.metrics import mean_absolute_error, mean_absolute_percentage_error, mean_squared_error
 
-from cloud_pilot import baseline, cloud_runtime, score, statistical_calendar, supervised, validate_data
+from rsf import data, metrics, splits
+from rsf.features import Calendar
+from rsf.models import REGISTRY
 
-
-class ProtocolTests(unittest.TestCase):
-    def test_local_runtime_is_blocked(self):
-        with patch.dict(os.environ, {}, clear=True):
-            with self.assertRaises(RuntimeError):
-                cloud_runtime()
-
-    def test_metrics_hand_calculation(self):
-        result = score([2, 4], [1, 4], np.arange(800))
-        self.assertAlmostEqual(result["mae"], 0.5)
-        self.assertAlmostEqual(result["rse"], 0.5)
-        self.assertAlmostEqual(result["mape"], 25.0)
-        self.assertAlmostEqual(result["rmse"], np.sqrt(0.5))
-
-    def test_undefined_metrics(self):
-        result = score([0, 0], [1, 0], np.ones(800))
-        for key in ("mape", "rse", "mase", "wape"):
-            self.assertIsNone(result[key])
-        self.assertEqual(result["mape_coverage"], 0.0)
-
-    def test_placeholder_dates_rejected(self):
-        dates = pd.date_range("2012-07-04", "2022-12-31")
-        frame = pd.DataFrame({"sale_date": dates, "g": 1.0, "cogs": 2.0})
-        self.assertEqual(len(validate_data(frame)), 3833)
-        frame.loc[len(frame)] = [pd.Timestamp("2023-01-01"), 1.0, 1.0]
-        with self.assertRaises(ValueError):
-            validate_data(frame)
-
-    def test_seasonal_calendar_leap_day_and_recursive(self):
-        dates = pd.date_range("2017-01-01", "2019-12-31")
-        train = pd.Series(np.arange(len(dates), dtype=float), index=dates)
-        result = baseline(train, pd.date_range("2020-01-01", periods=548), "snaive_year")
-        self.assertEqual(result[59], train.loc["2019-02-28"])
-        self.assertEqual(result[366], train.loc["2019-01-01"])
-
-    def test_features_do_not_read_future(self):
-        config = {"lag_days": [1, 7], "rolling_days": [7]}
-        series = pd.Series(np.arange(60, dtype=float), index=pd.date_range("2020-01-01", periods=60))
-        train = series.loc[:"2020-01-31"]
-        before = supervised(train, config)
-        series.loc["2020-02-01":] = 99999
-        after = supervised(series.loc[:"2020-01-31"], config)
-        np.testing.assert_array_equal(before[0], after[0])
-        self.assertEqual(before[0][0][0], 6.0)
-        self.assertEqual(before[1][0], 7.0)
-
-    def test_statistical_calendar_has_independent_known_future_columns(self):
-        train_dates = pd.date_range("2012-07-04", "2019-12-31", freq="D")
-        future_dates = pd.date_range("2020-01-01", periods=548, freq="D")
-        train_exog = statistical_calendar(train_dates)
-        future_exog = statistical_calendar(future_dates)
-        self.assertEqual(train_exog.shape, (len(train_dates), 6))
-        self.assertEqual(future_exog.shape, (548, 6))
-        self.assertEqual(np.linalg.matrix_rank(train_exog), 6)
-        self.assertTrue(np.isfinite(future_exog).all())
-        np.testing.assert_array_equal(future_exog[0], statistical_calendar([future_dates[0]])[0])
+HAS_DATA = (data.PROCESSED / data.SERIES_FILE).exists()
+needs_data = pytest.mark.skipif(not HAS_DATA, reason="chưa build data/processed")
 
 
-if __name__ == "__main__":
-    unittest.main()
+@pytest.fixture(scope="module")
+def loaded():
+    return data.load()
+
+
+@needs_data
+def test_regions_sum_to_total(loaded):
+    df, _ = loaded
+    data.check(df)  # raise nếu lệch
+    assert set(df.series_id) == set(data.SERIES)
+    assert df.groupby("series_id").size().eq(3833).all()
+
+
+def test_folds_never_touch_test():
+    for f in splits.FOLDS:
+        assert f.end <= splits.TEST_ORIGIN
+        assert len(f.dates) == splits.VAL_DAYS
+    assert splits.TEST.dates[0] == pd.Timestamp("2021-07-01")
+    assert len(splits.TEST.dates) == 549
+
+
+@needs_data
+def test_promo_rules_only_use_past(loaded):
+    _, promos = loaded
+    for f in splits.FOLDS + [splits.TEST]:
+        cal = Calendar(promos, f.origin)
+        used = promos[promos.start_date <= f.origin]
+        assert cal.rules["first_year"].max() <= f.origin.year
+        assert len(cal.rules) == used["promo_name"].str.replace(r"\s+\d{4}$", "", regex=True).nunique()
+
+
+@needs_data
+def test_regime_flag_only_after_observed(loaded):
+    _, promos = loaded
+    assert "post2019" not in Calendar(promos, splits.FOLDS[1].origin).features(splits.FOLDS[1].dates).columns
+    assert "post2019" in Calendar(promos, splits.TEST.origin).features(splits.TEST.dates).columns
+
+
+@needs_data
+def test_prediction_ignores_future_truth(loaded):
+    """Làm hỏng y sau origin: dự báo của model nhanh không được đổi."""
+    df, promos = loaded
+    y = data.series(df, "TOTAL", "revenue")
+    f = splits.FOLDS[3]
+    broken = y.copy()
+    broken.loc[f.origin + pd.Timedelta(days=1):] *= 10
+    for name in ["snaive1y", "snaive2y", "lightgbm"]:
+        p1 = REGISTRY[name](seed=42).fit(y.loc[:f.origin], Calendar(promos, f.origin)).predict(f.dates)
+        p2 = REGISTRY[name](seed=42).fit(broken.loc[:f.origin], Calendar(promos, f.origin)).predict(f.dates)
+        np.testing.assert_allclose(p1, p2)
+
+
+def test_metrics_match_sklearn():
+    rng = np.random.default_rng(0)
+    y, p = rng.uniform(1, 100, 50), rng.uniform(1, 100, 50)
+    assert metrics.mae(y, p) == pytest.approx(mean_absolute_error(y, p))
+    assert metrics.rmse(y, p) == pytest.approx(np.sqrt(mean_squared_error(y, p)))
+    assert metrics.mape(y, p) == pytest.approx(100 * mean_absolute_percentage_error(y, p))
+
+
+def test_dm_sign():
+    rng = np.random.default_rng(1)
+    e = rng.normal(size=500)
+    stat, p = metrics.diebold_mariano(0.5 * e, e)
+    assert stat < 0 and p < 0.01
