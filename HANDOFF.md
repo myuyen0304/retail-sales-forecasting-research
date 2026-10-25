@@ -1,5 +1,38 @@
 # Bàn giao
 
+## 2026-10-25: trích data từ DWH Databricks (Claude)
+
+**Mục đích.** Người dùng muốn paper lấy data từ DWH. Data từ DWH không khác data CSV; cái được là nguồn gốc ghi được trong paper.
+
+**Đã làm:**
+- `scripts/extract_dwh.py`:
+  - tổng hợp theo ngày × vùng trên Databricks từ `fact_order_item` + `dim_date` + `dim_customer` → `dim_geography`, và lấy `dim_promotion`;
+  - ghi ra `data/dwh/` (`daily_series.csv`, `promotions.csv`, `manifest.json`), không ghi đè `data/processed/`;
+  - tự đối chiếu với bản CSV và với `rpt_forecast_actual`.
+- `requirements-dwh.txt` có `databricks-sdk==0.117.0`, đã cài vào `.venv` bằng `uv pip`. `requirements.txt` không đổi, nên Colab không bị ảnh hưởng.
+
+**Bằng chứng** (bản `ccde5a5e21c54e9e9054066f`, catalog `retail_lab`, user `uyenuyen9780@gmail.com`):
+- 4 chuỗi khớp bản CSV đủ 3.833 ngày: lệch tối đa 1,3e-8 ở TOTAL, ≤ 1e-8 ở vùng.
+- Vùng của DWH lấy qua `customers.zip`, vùng của CSV lấy qua `orders.zip`; kết quả cho thấy hai cách khớp nhau.
+- Promotions: 50 dòng, `assert_frame_equal` đạt sau khi ép `discount_value` về double và `stackable_flag` về int.
+- TOTAL so với `rpt_forecast_actual`: lệch 0,005, do bảng đó làm tròn COGS 2 chữ số.
+- `rsf.data.load(Path('data/dwh'))` đạt; `pytest` 7/7.
+- **Không cần chạy lại CV.** Data trùng bản CSV đã dùng, nên không phải đổi protocol.
+
+**Quyền trên Databricks** (cấp tay 2026-10-25, chỉ cho `uyenuyen9780@gmail.com`):
+- `USE SCHEMA` + `SELECT` trên schema `r_ccde5a5e…_marts`;
+- `SELECT` trên `r_ccde5a5e…_reporting.rpt_forecast_actual`.
+
+**Bẫy:**
+- **Không** cấp cho `account users` hay nhóm workspace. Làm vậy khóa chat AI của Retail Analytics, vì guard chỉ đọc thấy SP AI có quyền thừa; đã xảy ra ngày 2026-10-25.
+- Khi pipeline publish bản mới, schema `r_<release>` đổi, phải cấp quyền lại và truyền `--release` mới.
+
+**Lệnh:** `python scripts/extract_dwh.py --profile retail-dev --release ccde5a5e21c54e9e9054066f`. Script trả exit 1 nếu lệch.
+
+**Bước tiếp:**
+- Câu nguồn data cho paper (§3) có thể ghi: data trích từ DWH, bản `ccde5a5e…`, đã kiểm trùng khớp với nguồn Datathon.
+- Muốn train trực tiếp từ bản DWH thì đặt `RSF_PROCESSED_DIR=data/dwh`.
+
 ## 2026-10-24: làm lại repo theo hướng paper NCKH (Claude)
 
 **Bối cảnh.** Bản GPT (export Databricks từ Colab, 40 model, 5 horizon) chạy xong nhưng không rút được kết luận. Nguyên nhân là thiết kế:
