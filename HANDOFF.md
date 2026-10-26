@@ -101,6 +101,7 @@ Bản GPT giữ ở tag `legacy-gpt-pilot` và nhánh `legacy/gpt-pilot`, chỉ 
 
 **Thứ tự chạy (đổi 2026-10-26: người dùng chốt chạy TẤT CẢ trên Colab, laptop không chạy gì vì thiếu RAM):**
 - Ngày 2026-10-25 laptop đã chạy xong CV 22 model thống kê/cây/ablation (704 task, 0 lỗi). Bản đó không dùng; chạy lại trên Colab để mọi model cùng một môi trường. Người dùng giữ bản sao ngoài repo.
+- Data trên Colab trích thẳng từ DWH bằng `scripts/extract_dwh.py` (mục 2 notebook, bản `ccde5a5e…`, token Databricks nhập qua getpass) vào Drive `MyDrive/rsf/data/`. Không upload CSV. Đã thử 2026-10-26 với thư mục data trống như Colab: exit 0, file ra trùng từng byte với `data/dwh/`.
 - Tham số model thống kê/cây vẫn lấy từ `results/best_params.json` đã tune trên laptop ngày 2026-10-24 (notebook chép sang Drive), không tune lại.
 - `notebooks/colab_run.ipynb`, trình tự:
   - mục 4: `cv --models baselines,arima,sarima,sarimax,prophet,rf,gb,xgboost,lightgbm,ablation --jobs 2`, rồi `cv --models sarima_w7,prophet_pure,rf_lag,gb_lag,xgboost_lag,lightgbm_lag --jobs 2`;
