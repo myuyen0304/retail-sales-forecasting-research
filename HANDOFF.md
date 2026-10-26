@@ -99,25 +99,23 @@ Bản GPT giữ ở tag `legacy-gpt-pilot` và nhánh `legacy/gpt-pilot`, chỉ 
 5. Chưa làm model global cho RQ4 (một LightGBM chung 3 vùng). Hiện RQ4 chỉ so bottom-up với trực tiếp.
 6. Viết vào `paper/main.tex` các phần không cần số: Methodology, Experimental setup, nháp Introduction/Related Works. Nguồn là `protocol.md` và `refs.bib`.
 
-**Thứ tự chạy đã thống nhất (2026-10-25, chia laptop và Colab):**
-- **Laptop**, model thống kê và cây:
-  - `cv --models baselines,arima,sarima,sarimax,prophet,rf,gb,xgboost,lightgbm,ablation --jobs 3`
-  - `cv --models sarima_w7,prophet_pure,rf_lag,gb_lag,xgboost_lag,lightgbm_lag --jobs 3`
-- **Colab**, mạng nơ-ron, chạy bằng `notebooks/colab_run.ipynb`, trình tự:
-  - `tune --models rnn,lstm`;
-  - `cv --models rnn,lstm` (5 seed);
-  - `cv --models rnn_ar,lstm_ar --seeds 3`.
-
-  Kết quả ghi vào Drive `MyDrive/rsf/results`. Gộp về laptop bằng `scripts/merge_colab.py <thư mục results tải về>`: chạy không có cờ để xem trước, rồi chạy thêm `--apply`.
-- Gộp xong mới chạy `make_tables.py` và `make_figures.py` trên laptop.
+**Thứ tự chạy (đổi 2026-10-26: người dùng chốt chạy TẤT CẢ trên Colab, laptop không chạy gì vì thiếu RAM):**
+- Ngày 2026-10-25 laptop đã chạy xong CV 22 model thống kê/cây/ablation (704 task, 0 lỗi). Bản đó không dùng; chạy lại trên Colab để mọi model cùng một môi trường. Người dùng giữ bản sao ngoài repo.
+- Tham số model thống kê/cây vẫn lấy từ `results/best_params.json` đã tune trên laptop ngày 2026-10-24 (notebook chép sang Drive), không tune lại.
+- `notebooks/colab_run.ipynb`, trình tự:
+  - mục 4: `cv --models baselines,arima,sarima,sarimax,prophet,rf,gb,xgboost,lightgbm,ablation --jobs 2`, rồi `cv --models sarima_w7,prophet_pure,rf_lag,gb_lag,xgboost_lag,lightgbm_lag --jobs 2`;
+  - mục 5: `tune --models rnn,lstm`;
+  - mục 6: `cv --models rnn,lstm` (5 seed), rồi `cv --models rnn_ar,lstm_ar --seeds 3`;
+  - mục 8: `make_tables.py`, `make_figures.py`.
+- Kết quả ở Drive `MyDrive/rsf/results`. Người dùng tải về, cắt `results/` cũ ra ngoài repo rồi đặt bản Drive vào `results/`. Không cần `merge_colab.py` (giữ lại, dùng khi chia laptop/Colab).
 - **Bẫy:** `cv` bỏ qua task đã có file trong `preds/` mà không kiểm tham số. Đừng chạy `--models main` trước khi tune RNN/LSTM. Đổi tham số của model nào thì phải xóa `results/preds/cv/<model>/` và các dòng của model đó trong `runs_cv.csv` rồi mới chạy lại.
-- Ghi trong paper rằng RNN/LSTM chạy trên Colab với phiên bản thư viện khác; chi tiết ở `env_*.json`.
+- Ghi trong paper môi trường chạy (Colab) theo `env_*.json`; riêng tune model thống kê/cây chạy trên laptop (`env_tune.json`).
 - Nếu paper điểm cộng sát hạn, có thể bỏ `rnn_ar` và `lstm_ar`. Người dùng chưa cho biết hạn nộp.
 
 **Code chưa từng chạy:**
-- `notebooks/colab_run.ipynb`: viết lại ngày 2026-10-25, chỉ chạy phần mạng nơ-ron. Code mới kiểm trên pandas 3.1, còn Colab dùng pandas 2.x;
+- `notebooks/colab_run.ipynb`: viết lại ngày 2026-10-26 để chạy toàn bộ CV và dựng bảng/hình. Code mới kiểm trên pandas 3.1, còn Colab dùng pandas 2.x;
 - nhánh `--test` của `make_tables.py` / `make_figures.py` (T7, F10, F11).
 
 Không chạy thử các phần này trên vùng test thật. Khi đến lúc chạy test mà gặp lỗi, chỉ cần sửa script rồi dựng lại bảng từ dự báo đã lưu, không phải chạy lại model.
 
-**Commit/push:** 2026-10-25 đã commit trên `main` ở local, mỗi file một commit (sau c370252). Chưa push, kể cả tag và nhánh legacy.
+**Commit/push:** 2026-10-26 `origin/main` đã có tới 26af59c. Notebook chạy-tất-cả-trên-Colab commit sau đó, người dùng cần push trước khi mở Colab.
