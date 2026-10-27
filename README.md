@@ -24,7 +24,9 @@ Chép 6 file CSV Datathon vào `data/raw/`: `sales`, `orders`, `order_items`, `p
 .venv/Scripts/python.exe -m rsf.data      # → data/processed/daily_series.csv + promotions.csv, tự kiểm 3 vùng cộng về TOTAL
 ```
 
-Lên Colab chỉ cần upload 2 file trong `data/processed/`. Xem [notebooks/colab_run.ipynb](notebooks/colab_run.ipynb).
+Trên Colab không cần upload data: notebook tự trích từ DWH Databricks. Xem [notebooks/colab_run.ipynb](notebooks/colab_run.ipynb).
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/myuyen0304/retail-sales-forecasting-research/blob/main/notebooks/colab_run.ipynb)
 
 ## Chạy thực nghiệm
 
