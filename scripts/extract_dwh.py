@@ -118,7 +118,8 @@ def main() -> int:
              for v in report.values())
     manifest = {"extracted_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                 "workspace": w.config.host, "catalog": a.catalog, "release": a.release, "warehouse_id": wid,
-                "user": w.current_user.me().user_name, "rows": len(df), "promotions": len(promos),
+                # lấy user qua SQL: token PAT chỉ có scope `sql` không gọi được SCIM current_user.me()
+                "user": query(w, wid, "SELECT current_user() AS u").iloc[0, 0], "rows": len(df), "promotions": len(promos),
                 "sql": {"series": SERIES_SQL.format(s=s).strip(), "promotions": PROMO_SQL.format(s=s).strip(),
                         "actual": ACTUAL_SQL.format(s=s)},
                 "tolerance": TOL, "checks": report, "matches_csv": ok}

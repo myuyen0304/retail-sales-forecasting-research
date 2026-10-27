@@ -26,6 +26,7 @@
 **Bẫy:**
 - **Không** cấp cho `account users` hay nhóm workspace. Làm vậy khóa chat AI của Retail Analytics, vì guard chỉ đọc thấy SP AI có quyền thừa; đã xảy ra ngày 2026-10-25.
 - Khi pipeline publish bản mới, schema `r_<release>` đổi, phải cấp quyền lại và truyền `--release` mới.
+- Token PAT dùng trên Colab (`colab-sales-pilot`) chỉ có scope `sql`, nên script chỉ được gọi API SQL. Ngày 2026-10-27, `current_user.me()` (SCIM) làm Colab lỗi `Unauthenticated`; đã đổi sang `SELECT current_user()`.
 
 **Lệnh:** `python scripts/extract_dwh.py --profile retail-dev --release ccde5a5e21c54e9e9054066f`. Script trả exit 1 nếu lệch.
 
