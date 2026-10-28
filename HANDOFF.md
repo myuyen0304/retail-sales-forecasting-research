@@ -35,7 +35,11 @@
 - RQ2–RQ5 thu gọn thành phần phụ. Ablation biến lịch/cờ chế độ vẫn giữ, để giải thích vì sao nhóm đầu thắng.
 - Tiêu đề tạm (trung tính, không khẳng định calendar > model, nên không vướng luật §5): *Benchmarking Statistical, Machine Learning and Deep Learning Models for Daily Retail Revenue Forecasting Across Multiple Regions*. Có thể chỉnh lại sau khi có test.
 
-**Bước tiếp:** người dùng chốt phương pháp đề xuất, rồi mới chạy `test` khi người dùng cho phép.
+**Phương pháp đề xuất: RNN** (trung bình 5 seed). Người dùng chốt ngày 2026-10-28 theo luật §7, **trước** khi chạy test, và cho phép chạy test cùng ngày.
+- Notebook có thêm mục 10 (test), với 3 lệnh `rsf.run test`, cell kiểm đủ file và lệnh `make_tables/make_figures --test`.
+- Nhánh `--test` của hai script đã thử trên dự báo giả (lặp lại dự báo F4, ở thư mục scratch): ra đủ `scores_test.csv`, T7, F08, F10, F11, không lỗi.
+
+**Bước tiếp:** người dùng chạy mục 10 trên Colab rồi tải `results/` về như lần trước. Sau đó đọc `scores_test.csv` và T7, rồi viết phần Results.
 
 ## 2026-10-25: trích data từ DWH Databricks (Claude)
 
