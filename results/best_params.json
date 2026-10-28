@@ -33,5 +33,13 @@
     "learning_rate": 0.03,
     "num_leaves": 7,
     "min_child_samples": 30
+  },
+  "rnn": {
+    "hidden": 32,
+    "lookback": 56
+  },
+  "lstm": {
+    "hidden": 64,
+    "lookback": 56
   }
 }

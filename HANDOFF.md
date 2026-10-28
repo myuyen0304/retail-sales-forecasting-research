@@ -1,5 +1,24 @@
 # Bàn giao
 
+## 2026-10-28: CV đầy đủ đã chạy xong trên Colab (Claude)
+
+**Đã làm:**
+- Notebook Colab chạy hết mục 4–8 (2026-10-27 → 2026-10-28):
+  - 1.216 task, tất cả `ok`;
+  - 22 model × 32, cộng `rnn`/`lstm` 160 mỗi model (5 seed) và `rnn_ar`/`lstm_ar` 96 mỗi model (3 seed).
+- Tune trên Colab cho RNN hidden=32 và LSTM hidden=64, cả hai lookback=56, đã ghi vào `best_params.json`. Tham số model thống kê/cây giữ bản tune trên laptop ngày 2026-10-24; file `tuning/` khớp bản cũ.
+- `results/` trong repo là bản Drive. `results/` cũ (gồm bản CV laptop ngày 2026-10-25, không dùng) đã chuyển ra `D:\retail-sales-forecasting-results-laptop-old`.
+- `env_tune.json` bị Colab ghi đè, đã gộp lại: 2 mục laptop (tune thống kê/cây) và 3 mục Colab (tune RNN/LSTM).
+- `env_cv.json`: Colab 2 lõi, Python 3.13.16/3.13.18, cùng bộ thư viện.
+
+**Nhìn sơ** (TOTAL/revenue, MAE trung bình 4 fold):
+- RNN 960k, LSTM 961k, XGBoost 961k, LightGBM 964k, GB 970k; ensemble 996–999k.
+- Bỏ cờ chế độ: LightGBM 1,56M, SARIMAX 1,30M.
+- Xếp hạng trên 16 bài toán: RNN 3,06, LSTM 3,19, XGBoost 3,44, LightGBM 3,81. Nemenyi CD = 4,17, nên không tách được nhóm đầu.
+- H1 ("RNN không thắng cây") không được ủng hộ ở CV. Phải bàn trong paper.
+
+**Bước tiếp:** đọc T1–T6, trả lời RQ1–RQ5 trên CV, chốt phương pháp đề xuất, rồi mới chạy `test` khi người dùng cho phép.
+
 ## 2026-10-25: trích data từ DWH Databricks (Claude)
 
 **Mục đích.** Người dùng muốn paper lấy data từ DWH. Data từ DWH không khác data CSV; cái được là nguồn gốc ghi được trong paper.
