@@ -17,7 +17,25 @@
 - Xếp hạng trên 16 bài toán: RNN 3,06, LSTM 3,19, XGBoost 3,44, LightGBM 3,81. Nemenyi CD = 4,17, nên không tách được nhóm đầu.
 - H1 ("RNN không thắng cây") không được ủng hộ ở CV. Phải bàn trong paper.
 
-**Bước tiếp:** đọc T1–T6, trả lời RQ1–RQ5 trên CV, chốt phương pháp đề xuất, rồi mới chạy `test` khi người dùng cho phép.
+**Đọc kỹ CV.** Mọi số dưới đây là revenue; "trung bình 4 chuỗi" là MAE trung bình của 4 chuỗi.
+- **Luật §7 chọn RNN.** MAE trung bình 4 fold: RNN 508k, XGBoost 512k, LSTM 513k, LightGBM 514k. Nếu chỉ tính F2–F4, RNN vẫn đứng đầu (503k), ens_avg_topk 504k.
+  - Lưu ý: số của RNN trong T1 là **trung bình dự báo của 5 seed**. Tính riêng từng seed, RNN cho MAE 522k ± 17k, LSTM 519k ± 8k, đều kém XGBoost (1 lần fit). Paper phải nói rõ điều này.
+  - Ở F4 (gần test nhất): XGBoost 316k, LightGBM 317k, RNN 338k, LSTM 360k.
+- **Luật tiêu đề §5 → phải đổi tiêu đề.** Trên F3–F4, khi bỏ một nhóm biến:
+  - bỏ `regime`: MAE tăng 64–84% với SARIMAX (riêng WEST chỉ 5–6%) và 81–170% với LightGBM;
+  - bỏ `dom`: tăng 12–27% với SARIMAX, khoảng 0 với LightGBM;
+  - bỏ `promo`: SARIMAX tăng 1–3%, LightGBM từ −9% đến +5%.
+- **H2 đạt.** Bản dùng biến lịch thắng bản pure ở ≥ 3/4 fold trong 72/72 cặp. Mức giảm MAE: cây 7–34%; SARIMAX/RNN/LSTM 47–81%.
+- **H3 đạt yếu.** Trên F2–F4, ens_avg_topk 504k so với sel_online 506k. Sd giữa các fold nhỏ hơn ở 3/4 chuỗi, riêng TOTAL thì lớn hơn. Nemenyi CD = 6,66, không tách được.
+- **RQ4.** Bottom-up tốt hơn dự báo TOTAL trực tiếp với mọi model chính, 1,2–4%.
+- **RQ5.** COGS dự báo trực tiếp tốt hơn đi qua tỷ lệ, 1–4% với các model tốt.
+
+**Hướng paper (người dùng chốt 2026-10-28):**
+- Trọng tâm là RQ1: model nào dự báo revenue chính xác nhất.
+- RQ2–RQ5 thu gọn thành phần phụ. Ablation biến lịch/cờ chế độ vẫn giữ, để giải thích vì sao nhóm đầu thắng.
+- Tiêu đề tạm (trung tính, không khẳng định calendar > model, nên không vướng luật §5): *Benchmarking Statistical, Machine Learning and Deep Learning Models for Daily Retail Revenue Forecasting Across Multiple Regions*. Có thể chỉnh lại sau khi có test.
+
+**Bước tiếp:** người dùng chốt phương pháp đề xuất, rồi mới chạy `test` khi người dùng cho phép.
 
 ## 2026-10-25: trích data từ DWH Databricks (Claude)
 
