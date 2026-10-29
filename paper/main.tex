@@ -13,16 +13,20 @@
 
 % ---------------------------------------------------------------- 4.1
 \begin{abstract}
-Accurate daily revenue forecasts support inventory, staffing and financial planning in retail, yet published comparisons of forecasting models often differ in data, horizons and inputs, which makes their conclusions hard to transfer.
-This study benchmarks ten widely used models---ARIMA, SARIMA, SARIMAX, Prophet, Random Forest, Gradient Boosting, XGBoost, LightGBM, RNN and LSTM---together with seasonal-naive baselines and three forecast-combination schemes, on daily revenue and cost of goods sold (COGS) of an e-commerce retailer, aggregated to a national total and three regions (3{,}833 days, 2012--2022).
-All models receive the same calendar, promotion and regime covariates, and each is also run in a ``pure'' autoregressive form to isolate the value of this information.
-Models are tuned and compared with four-fold expanding-window time-series cross-validation and evaluated once on an 18-month hold-out test set using RMSE, MAE and MAPE, with Diebold--Mariano and Friedman--Nemenyi tests.
-\todo{main results: best model, gain over baseline, ablation gain, ensemble gain}.
-\todo{contribution sentence}.
+% Số trong abstract lấy từ results/tables (T1 có cột test, T2, T7); sửa cùng lúc với mục IV nếu số đổi.
+Published comparisons of retail forecasting models often differ in data, horizons and inputs, which makes their conclusions hard to transfer.
+This study benchmarks ten widely used models---ARIMA, SARIMA, SARIMAX, Prophet, Random Forest, Gradient Boosting, XGBoost, LightGBM, RNN and LSTM---with seasonal-naive baselines and three forecast-combination schemes.
+The data are daily revenue and cost of goods sold of an online retailer for a national total and three regions (3{,}833 days, 2012--2022).
+All models receive the same known-in-advance calendar, promotion and regime covariates and forecast directly up to 18 months ahead; recursive variants without calendar information serve as ablations.
+Models are compared with four-fold rolling-origin cross-validation, and the selected method is evaluated once on a 549-day hold-out test set with all alternatives, using Diebold--Mariano and Friedman--Nemenyi tests.
+On the test set, gradient-boosted trees are the most accurate and cheapest models: XGBoost, Gradient Boosting and LightGBM are statistically indistinguishable, and XGBoost reduces revenue MAE by 23\% relative to a seasonal-naive forecast (MAPE 29\%).
+The RNN, which ranked first in cross-validation by a margin of about 1\%, is significantly less accurate than the best model in three of four series.
+Calendar information reduces error by 21--84\% relative to recursive models without it, and an indicator of the 2019 level shift is the most valuable covariate group.
+The results suggest that how a model receives information about the series matters more than the choice of model family, and that small cross-validation margins between models should not be read as a ranking.
 \end{abstract}
 
 \begin{IEEEkeywords}
-retail sales forecasting, time series cross-validation, gradient boosting, LSTM, forecast combination, calendar effects
+retail sales forecasting, benchmark, gradient boosting, XGBoost, LSTM, time series cross-validation, forecast combination, calendar effects
 \end{IEEEkeywords}
 
 % ---------------------------------------------------------------- 4.2
@@ -439,7 +443,34 @@ Three findings stand out.
 \end{itemize}
 
 \section{Conclusion}
-\todo{}
+This study compared ten statistical, machine learning and deep learning models for daily retail revenue at horizons of up to 18 months.
+All models received the same known-in-advance covariates and forecast directly, and they were evaluated with a fixed protocol: rolling-origin cross-validation, a single hold-out test and significance tests.
+
+Gradient-boosted trees were the most accurate models on the test set and also the cheapest to fit.
+XGBoost, Gradient Boosting and LightGBM could not be separated statistically, and XGBoost reduced MAE by 23\% relative to the seasonal-naive baseline.
+RNN and LSTM with the same inputs were competitive in cross-validation.
+The RNN selected there was, however, significantly less accurate than the best model in three of four series on the test set, and its cross-validation advantage relied on averaging five seeds.
+Forecast combination protected against choosing a weaker model but did not improve on the best one.
+Forecasting the total bottom-up from the regions was slightly more accurate than forecasting it directly, and COGS was better forecast directly than through a revenue ratio.
+
+The ablations showed what drives accuracy.
+Known-in-advance calendar information and a direct forecasting strategy reduced error by 21--84\% compared with recursive models without this information.
+An explicit indicator of the level shift was the most valuable single covariate group, while promotion indicators mattered mainly during the campaigns themselves.
+
+For practitioners, these results support three recommendations:
+\begin{itemize}
+\item use a gradient-boosted tree model with calendar, promotion and regime covariates as a strong and inexpensive default for long-horizon daily revenue forecasts;
+\item invest in encoding what is known about the calendar and about structural changes before investing in more complex models;
+\item treat small differences in cross-validation accuracy as ties unless they are confirmed by significance tests on held-out data.
+\end{itemize}
+
+The study has the limitations discussed in Section~IV: a single retailer, a single test origin and a retrospective design.
+Future work should do three things:
+\begin{itemize}
+\item repeat the protocol on data from other retailers and with several test origins;
+\item detect level shifts automatically instead of fixing their date in advance;
+\item evaluate global models trained jointly on the regional series and reconciliation methods for the regional hierarchy~\cite{wickramasuriya2019mint}.
+\end{itemize}
 
 \bibliographystyle{IEEEtran}
 \bibliography{refs}
