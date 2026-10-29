@@ -18,11 +18,12 @@
 \begin{abstract}
 % Số trong abstract lấy từ results/tables (T1 có cột test, T2, T7); sửa cùng lúc với mục IV nếu số đổi.
 Published comparisons of retail forecasting models often differ in data, horizons and inputs, which makes their conclusions hard to transfer.
-This study benchmarks ten widely used models---ARIMA, SARIMA, SARIMAX, Prophet, Random Forest, Gradient Boosting, XGBoost, LightGBM, RNN and LSTM---with seasonal-naive baselines and three forecast-combination schemes.
+This study benchmarks ten widely used models, namely ARIMA, SARIMA, SARIMAX, Prophet, Random Forest, Gradient Boosting, XGBoost, LightGBM, RNN and LSTM, against seasonal-naive baselines and three forecast-combination schemes.
 The data are daily revenue and cost of goods sold of an online retailer for a national total and three regions (3{,}833 days, 2012--2022).
 All models receive the same known-in-advance calendar, promotion and regime covariates and forecast directly up to 18 months ahead; recursive variants without calendar information serve as ablations.
 Models are compared with four-fold rolling-origin cross-validation, and the selected method is evaluated once on a 549-day hold-out test set with all alternatives, using Diebold--Mariano and Friedman--Nemenyi tests.
-On the test set, gradient-boosted trees are the most accurate and cheapest models: XGBoost, Gradient Boosting and LightGBM are statistically indistinguishable, and XGBoost reduces revenue MAE by 23\% relative to a seasonal-naive forecast (MAPE 29\%).
+On the test set, gradient-boosted trees are both the most accurate and the cheapest models.
+XGBoost, Gradient Boosting and LightGBM are statistically indistinguishable, and XGBoost reduces revenue MAE by 23\% relative to a seasonal-naive forecast (MAPE 29\%).
 The RNN, which ranked first in cross-validation by a margin of about 1\%, is significantly less accurate than the best model in three of four series.
 Calendar information reduces error by 21--84\% relative to recursive models without it, and an indicator of the 2019 level shift is the most valuable covariate group.
 The results suggest that how a model receives information about the series matters more than the choice of model family, and that small cross-validation margins between models should not be read as a ranking.
