@@ -61,7 +61,15 @@
 | SNaive-1Y | 423k |
 
 - XGBoost thấp hơn SNaive-1Y 23%. MAPE của nhóm đầu khoảng 29%.
-- **Phương pháp đề xuất RNN thua model tốt nhất có ý nghĩa** ở cả 4 chuỗi (DM, p = 0,002–0,04). XGBoost, GB và LightGBM không tách được nhau (p > 0,1, riêng TOTAL XGBoost so với LightGBM p = 0,048). Đúng như tín hiệu ở F4. Paper báo trung thực: RNN thắng sát nút trên CV nhưng không giữ được ở test.
+- **RNN (phương pháp đề xuất) thua model tốt nhất ở test.** Theo T7 hiện tại, DM cho p = 0,002–0,04 ở cả 4 chuỗi.
+  - **Cẩn thận:** `metrics.diebold_mariano` được gọi với h=1, nên phương sai không tính tự tương quan của sai số theo ngày, và p-value bị nhỏ quá mức.
+  - Tính thử bằng Newey–West (Bartlett, độ trễ 8 và 30), so XGBoost/GB với RNN:
+    - TOTAL p ≈ 0,013, EAST p ≈ 0,02–0,03: vẫn có ý nghĩa;
+    - WEST p ≈ 0,04–0,06: sát ngưỡng;
+    - CENTRAL so với XGBoost p ≈ 0,35: không có ý nghĩa.
+  - XGBoost, GB và LightGBM vẫn không tách được nhau. TOTAL XGBoost so với LightGBM thành p ≈ 0,13–0,15.
+  - Sửa DM là việc làm sau khi đã xem điểm, nên phải ghi vào protocol §9 và cần người dùng đồng ý.
+- Đúng như tín hiệu ở F4. Paper báo trung thực: RNN thắng sát nút trên CV nhưng không giữ được ở test.
 - Bỏ cờ chế độ: LightGBM 659k, gấp đôi. Riêng SARIMAX bỏ cờ thì lại nhỉnh hơn một chút ở test (356k so với 361k).
 - COGS ở test: `lightgbm_nopromo` tốt nhất (294k), XGBoost 305k.
 
