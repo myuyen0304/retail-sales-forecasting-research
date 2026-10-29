@@ -41,16 +41,16 @@ Practitioners can choose from three broad families of models:
 \end{itemize}
 Large forecasting competitions, in particular M5 on Walmart sales~\cite{makridakis2022m5}, have shown the strength of tree-based machine learning on retail data~\cite{januschowski2022trees}.
 For long horizons, simple models can match far more complex neural architectures~\cite{zeng2023transformers}.
-% Kết luận của ba bài dưới đây mới lấy từ tóm tắt/kết quả tìm kiếm (literature_matrix.csv: "kiểm lại trong bài"); phải đọc bản đầy đủ trước khi nộp.
-Yet applied comparisons on retail data name different winners, including ARIMA, LSTM and gradient boosting~\cite{hasan2022comparative,ensafi2022seasonal,hobor2026comparative}.
+% Đã kiểm 2026-10-29 (literature_matrix.csv): hasan, hobor, retail2023 đọc bản đầy đủ; ensafi, theodoridis chỉ đọc tóm tắt.
+Yet applied comparisons on retail data name different winners: ARIMA on Walmart unit sales~\cite{hasan2022comparative}, a stacked LSTM on furniture sales~\cite{ensafi2022seasonal}, deep neural architectures on store-level demand~\cite{theodoridis2025lstmixer} and XGBoost in brick-and-mortar retail~\cite{hobor2026comparative}.
 
 Such conflicting results are hard to interpret because comparisons differ in more than the model, in five ways:
 \begin{itemize}
 \item models often receive different inputs, for example calendar and promotion information for some but not for others;
-\item horizons are often short;
-\item machine learning and deep learning models are often run recursively on their own lagged forecasts, so errors accumulate over long horizons;
-\item many studies evaluate on a single train/test split~\cite{tashman2000outofsample,bergmeir2018cv};
-\item differences in accuracy are rarely tested for significance~\cite{diebold1995dm,demsar2006statistical}.
+\item horizons are often short, for example 28 days~\cite{hasan2022comparative};
+\item multi-step strategies differ: machine learning and deep learning models are often run recursively on their own lagged forecasts, so errors accumulate over long horizons, and within one study tree models may be scored one step ahead while neural networks forecast the whole horizon at once~\cite{hobor2026comparative};
+\item many studies evaluate on a single train/test split~\cite{hasan2022comparative,retail2023multivariate,hobor2026comparative}, although repeated rolling origins give a more reliable estimate~\cite{tashman2000outofsample,bergmeir2018cv};
+\item differences in accuracy are rarely tested for significance~\cite{diebold1995dm,demsar2006statistical}, so small changes in error can be reported as improvements~\cite{retail2023multivariate}.
 \end{itemize}
 A comparison that controls these factors can say more about the model families themselves.
 
@@ -93,8 +93,8 @@ Section~V concludes.
 
 % ---------------------------------------------------------------- 4.3
 \section{Related Work}
-% Chỉ dùng nội dung đã biết chắc của các bài kinh điển. Các bài có status "kiểm lại trong bài" / "đọc full text"
-% trong literature_matrix.csv chỉ được nhắc ở mức chủ đề; kết luận cụ thể phải đọc bản đầy đủ rồi mới thêm.
+% Bài có status "chỉ đọc tóm tắt" trong literature_matrix.csv chỉ được dẫn cho kết luận chính trong tóm tắt,
+% không dẫn cho chi tiết thiết kế (horizon, cách chia dữ liệu, kiểm định). Bài "đọc full text" chỉ nhắc ở mức chủ đề.
 Retail forecasting has a large literature; Fildes et al.~\cite{fildes2022retail} review research and practice, and Petropoulos et al.~\cite{petropoulos2022theory} survey forecasting methods more broadly.
 We focus on the three model families compared in this study, on how forecasts are combined and evaluated, and on what is missing from existing comparisons.
 
@@ -114,6 +114,8 @@ XGBoost~\cite{chen2016xgboost} and LightGBM~\cite{ke2017lightgbm} are scalable, 
 Gradient-boosted trees were the basis of most top solutions in the M5 competition on Walmart unit sales~\cite{makridakis2022m5}, and Januschowski et al.~\cite{januschowski2022trees} discuss why tree ensembles work well in forecasting.
 Trees do not extrapolate along time, so they forecast either recursively from lagged values or directly from known-in-advance covariates.
 For daily retail demand, calendar-related special days are an important input~\cite{huber2020calendric}.
+Albassam et al.~\cite{albassam2026tree} compared seven tree-based models on the BigMart and Rossmann data; their ablation identified seasonal and promotional features as critical drivers of accuracy.
+Haque et al.~\cite{retail2023multivariate} added macroeconomic indicators to linear and tree-based models for one Walmart store and observed only small changes in error.
 Statistical and machine learning methods have also been compared for daily demand at the product (SKU) level~\cite{spiliotis2020sku}.
 
 \subsection{Deep learning}
@@ -122,7 +124,8 @@ Bandara et al.~\cite{bandara2019lstm} applied LSTM to e-commerce sales demand.
 Hewamalage et al.~\cite{hewamalage2021rnn} review RNNs for forecasting and show that their accuracy depends strongly on preprocessing and on design choices such as the input window and the multi-step strategy.
 More recent architectures, including Transformers, target long horizons.
 However, Zeng et al.~\cite{zeng2023transformers} found that a simple linear model outperformed Transformer-based models on standard long-horizon benchmarks.
-Deep models have also been compared on retail demand data~\cite{retail2023multivariate,theodoridis2025lstmixer}.
+On retail data, Theodoridis and Tsadiras~\cite{theodoridis2025lstmixer} found that the Temporal Fusion Transformer, a temporal convolutional network, TSMixer and their proposed LSTM extension (LSTMixer) outperformed common statistical and machine learning methods on sales data from 45 stores.
+Qureshi et al.~\cite{qureshi2024rossmann} forecast demand for Rossmann stores with weather covariates and reported that a GRU tuned by grid search improved on a previously proposed LSTM.
 
 \subsection{Forecast combination}
 Since Bates and Granger~\cite{bates1969combination}, combining forecasts from different models has been one of the most reliable ways to improve accuracy~\cite{clemen1989combining,wang2023combinations}.
@@ -142,8 +145,7 @@ Two tests are commonly used to check whether differences in accuracy are larger 
 \end{itemize}
 
 \subsection{Research gap}
-% Câu "to our knowledge" cần kiểm lại sau khi đọc bản đầy đủ các bài trong literature_matrix.csv.
-Applied comparisons of these model families on retail data reach different conclusions~\cite{hasan2022comparative,ensafi2022seasonal,hobor2026comparative}.
+Applied comparisons of these model families on retail data reach different conclusions~\cite{hasan2022comparative,ensafi2022seasonal,theodoridis2025lstmixer,hobor2026comparative}.
 As discussed in the introduction, such comparisons rarely control what each model is given, how it forecasts and how it is evaluated.
 To our knowledge, few studies on daily retail revenue combine all of the following:
 \begin{itemize}
@@ -428,8 +430,8 @@ Forecast combination therefore mainly protects against choosing a weaker model.
 \subsection{Discussion}
 Three findings stand out.
 \begin{enumerate}
-\item \emph{Gradient-boosted trees.} With calendar covariates and a direct (non-recursive) strategy, these trees are the most accurate and cheapest option for daily revenue forecasts up to 18 months ahead. RNN and LSTM fed the same covariates are competitive on CV but not better on unseen data, and need several seeds to reach that level. This agrees with the strength of tree ensembles in retail competitions~\cite{makridakis2022m5,januschowski2022trees}.
-\item \emph{What drives accuracy.} How a model receives information about the series matters more than which model is used. On the test set, each of the eight calendar-aware models in Table~\ref{tab:ablation} beats every pure recursive variant, and the regime indicator is the most valuable single covariate group. Together with SARIMAX's insensitivity to it on test, this suggests that the benefit of the indicator depends on how the model represents the level of the series.
+\item \emph{Gradient-boosted trees.} With calendar covariates and a direct (non-recursive) strategy, these trees are the most accurate and cheapest option for daily revenue forecasts up to 18 months ahead. RNN and LSTM fed the same covariates are competitive on CV but not better on unseen data, and need several seeds to reach that level. This agrees with the strength of tree ensembles in retail competitions~\cite{makridakis2022m5,januschowski2022trees} and in brick-and-mortar retail~\cite{hobor2026comparative}. Studies in which deep models won~\cite{ensafi2022seasonal,theodoridis2025lstmixer} used different data and protocols, so their results are not directly comparable with ours.
+\item \emph{What drives accuracy.} How a model receives information about the series matters more than which model is used. On the test set, each of the eight calendar-aware models in Table~\ref{tab:ablation} beats every pure recursive variant, and the regime indicator is the most valuable single covariate group. Together with SARIMAX's insensitivity to it on test, this suggests that the benefit of the indicator depends on how the model represents the level of the series. Unlike the Rossmann ablation of Albassam et al.~\cite{albassam2026tree}, promotion indicators barely change the overall error here, because the campaigns recur on fixed dates that the seasonal terms already capture.
 \item \emph{Rankings among close models are unstable.} A margin of 1\% on CV did not survive the test period. Benchmarks should therefore report significance tests and treat models within the critical difference as equivalent.
 \end{enumerate}
 

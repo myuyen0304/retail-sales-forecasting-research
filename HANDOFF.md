@@ -88,8 +88,11 @@
   - tác giả và đơn vị;
   - mô tả dữ liệu (nhà bán lẻ, tiền tệ, giấy phép);
   - có ghi link repo không (tùy quy định ẩn danh của nơi nộp).
-- **Trước khi nộp phải đọc bản đầy đủ** của `hasan2022comparative`, `ensafi2022seasonal`, `hobor2026comparative`. Kết luận hiện chỉ lấy từ tóm tắt. Câu "to our knowledge, few studies…" ở Research gap cũng cần đối chiếu với literature_matrix.
-- Các mục `@misc` arXiv trong `refs.bib` chưa có trường `author`.
+- **Đã kiểm tài liệu (2026-10-29):**
+  - Đọc bản đầy đủ: hasan2022, hobor2026, retail2023 (Haque et al.). Chỉ đọc tóm tắt: ensafi2022, albassam2026, theodoridis2025, qureshi2024. MDPI, ScienceDirect và IEEE chặn tải PDF tự động; người dùng có thể tải bằng trình duyệt nếu muốn kiểm kỹ hơn.
+  - Đã sửa trích dẫn sai: retail2023 không có model deep learning, nên đã chuyển sang mục Machine learning.
+  - Bài chỉ đọc tóm tắt chỉ được dẫn cho kết luận chính, không dẫn cho chi tiết thiết kế. Chi tiết trong `paper/literature_matrix.csv`.
+  - `refs.bib` đã có đủ tác giả, số tập và số trang (kiểm qua Crossref). Mục arXiv có thêm `howpublished`, vì IEEEtran.bst bỏ qua `eprint`. Khi mở PDF trên Overleaf, kiểm xem mã arXiv có in ra không.
 
 ## 2026-10-25: trích data từ DWH Databricks (Claude)
 
@@ -187,7 +190,7 @@ Bản GPT giữ ở tag `legacy-gpt-pilot` và nhánh `legacy/gpt-pilot`, chỉ 
    - RNN chậm nhất: khoảng 100 giây mỗi lần fit.
    - Colab bản miễn phí chỉ có 2 lõi CPU, nên sẽ chậm hơn laptop.
 3. Đọc bảng CV, chốt phương pháp đề xuất, rồi mới chạy `test` một lần.
-4. Đọc bản đầy đủ các bài trong `literature_matrix.csv` (cột status) và viết research gap.
+4. ~~Đọc bản đầy đủ các bài trong `literature_matrix.csv` (cột status) và viết research gap.~~ Xong 2026-10-29 (xem mục Paper).
 5. Chưa làm model global cho RQ4 (một LightGBM chung 3 vùng). Hiện RQ4 chỉ so bottom-up với trực tiếp.
 6. Viết vào `paper/main.tex` các phần không cần số: Methodology, Experimental setup, nháp Introduction/Related Works. Nguồn là `protocol.md` và `refs.bib`.
 
