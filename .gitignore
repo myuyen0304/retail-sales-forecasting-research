@@ -233,3 +233,4 @@ __marimo__/
 
 # Kết quả: commit bảng, hình, log chạy, tuning; dự báo thô (parquet) giữ ngoài git
 /results/preds/
+/paper/overleaf.zip
