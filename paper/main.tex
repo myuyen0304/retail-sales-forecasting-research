@@ -27,20 +27,65 @@ retail sales forecasting, time series cross-validation, gradient boosting, LSTM,
 
 % ---------------------------------------------------------------- 4.2
 \section{Introduction}
-Forecasting total sales is a routine but consequential task in retail: daily forecasts drive replenishment, workforce scheduling and cash-flow planning, and their errors propagate into stock-outs, waste and missed revenue~\cite{fildes2022retail}.
-Large forecasting competitions on retail data, such as M5 on Walmart sales~\cite{makridakis2022m5}, have shown the strength of tree-based machine learning, while many applied studies report conflicting winners among ARIMA, Prophet, LSTM and gradient boosting~\cite{hasan2022comparative,ensafi2022seasonal,hobor2026comparative}.
+Forecasting total sales is a routine but consequential task in retail.
+Daily forecasts drive replenishment, workforce scheduling and cash-flow planning, and their errors propagate into stock-outs, waste and missed revenue~\cite{fildes2022retail}.
+Practitioners can choose from three broad families of models:
+\begin{itemize}
+\item statistical models such as ARIMA and Prophet~\cite{hyndman2021fpp3,taylor2018prophet};
+\item machine learning models such as random forests and gradient-boosted trees~\cite{breiman2001rf,chen2016xgboost,ke2017lightgbm};
+\item deep learning models such as recurrent networks and LSTM~\cite{hewamalage2021rnn}.
+\end{itemize}
+Large forecasting competitions, in particular M5 on Walmart sales~\cite{makridakis2022m5}, have shown the strength of tree-based machine learning on retail data~\cite{januschowski2022trees}.
+For long horizons, simple models can match far more complex neural architectures~\cite{zeng2023transformers}.
+% Kết luận của ba bài dưới đây mới lấy từ tóm tắt/kết quả tìm kiếm (literature_matrix.csv: "kiểm lại trong bài"); phải đọc bản đầy đủ trước khi nộp.
+Yet applied comparisons on retail data name different winners, including ARIMA, LSTM and gradient boosting~\cite{hasan2022comparative,ensafi2022seasonal,hobor2026comparative}.
 
-Daily retail revenue is hard to forecast over long horizons for several reasons that appear together in our data: strong annual seasonality, intra-month patterns, promotion campaigns that recur on fixed calendar dates (some only in odd years), and a structural break that lowers the level of the series by about 40\%.
-Data from multiple regions add a further question: whether to forecast the total directly or to aggregate regional forecasts~\cite{hyndman2011hierarchical}.
+Such conflicting results are hard to interpret because comparisons differ in more than the model, in five ways:
+\begin{itemize}
+\item models often receive different inputs, for example calendar and promotion information for some but not for others;
+\item horizons are often short;
+\item machine learning and deep learning models are often run recursively on their own lagged forecasts, so errors accumulate over long horizons;
+\item many studies evaluate on a single train/test split~\cite{tashman2000outofsample,bergmeir2018cv};
+\item differences in accuracy are rarely tested for significance~\cite{diebold1995dm,demsar2006statistical}.
+\end{itemize}
+A comparison that controls these factors can say more about the model families themselves.
 
-\todo{limitations of existing comparisons: different inputs per model; short horizons; recursive strategies; single split; no significance testing}.
+This study presents such a comparison for daily revenue of an online retailer.
+The data combine several difficulties that are common in practice:
+\begin{itemize}
+\item strong annual seasonality and intra-month patterns;
+\item promotion campaigns that recur on fixed calendar dates, some only in odd years;
+\item a level shift that lowers revenue by about 40\% from 2019 onwards;
+\item four series, a national total and three regions, which raise the question of whether to forecast the total directly or to aggregate regional forecasts~\cite{hyndman2011hierarchical}.
+\end{itemize}
 
-The objectives of this study are to
-(i) compare nine forecasting models from three families under one protocol for horizons up to 18 months;
-(ii) measure how much of the accuracy comes from known-in-advance calendar information rather than from model class;
-(iii) evaluate whether forecast combination improves on the best single model; and
-(iv) compare direct and bottom-up forecasting of the total from three regional series.
-\todo{contributions list after results}.
+We benchmark ten models from three families against two seasonal-naive baselines and three forecast-combination schemes, all under one protocol:
+\begin{itemize}
+\item every model receives the same covariates, which are known in advance;
+\item every model forecasts directly from a single origin, up to 18 months ahead;
+\item hyperparameters are tuned and models compared with four-fold rolling-origin cross-validation;
+\item the method selected on cross-validation is then evaluated once on a 549-day hold-out test set, together with all alternatives, using significance tests.
+\end{itemize}
+The study addresses four questions:
+(i) which model family is most accurate;
+(ii) how much of the accuracy comes from calendar information rather than from the model;
+(iii) whether forecast combination improves on the best single model; and
+(iv) whether the total is better forecast directly or bottom-up from the regions.
+
+The main contributions are as follows.
+\begin{itemize}
+\item A controlled benchmark of statistical, machine learning and deep learning models for daily revenue at horizons of up to 18 months. The protocol was fixed before cross-validation, the proposed method was chosen before the test set was opened, and all later changes are documented.
+\item Evidence that gradient-boosted trees (XGBoost, Gradient Boosting, LightGBM) with calendar covariates are the most accurate and cheapest models on the test set, reducing MAE by 23\% relative to a seasonal-naive baseline.
+\item Evidence that RNN and LSTM fed the same covariates are competitive in cross-validation but not better on unseen data. The RNN, which ranked first in cross-validation, was significantly less accurate than the best model in three of four series on the test set.
+\item An ablation showing what drives accuracy. Calendar-aware direct models reduce error by 21--84\% relative to recursive models without calendar information. An explicit indicator of the 2019 level shift is the most valuable covariate group. Promotion indicators matter mainly during the campaigns themselves.
+\end{itemize}
+\todo{decide whether to add a code-availability sentence with the public repository URL (check anonymity rules of the venue)}
+
+The rest of the paper is organised as follows.
+Section~II reviews related work.
+Section~III describes the data, covariates, models and evaluation protocol.
+Section~IV reports and discusses the results.
+Section~V concludes.
 
 % ---------------------------------------------------------------- 4.3
 \section{Related Work}
