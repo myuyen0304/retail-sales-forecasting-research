@@ -88,8 +88,7 @@
   - tác giả: Tran Thi My Uyen, Ngo Duy Thong;
   - mô tả dữ liệu theo datathon.site và data/raw;
   - link repo GitHub (người dùng đồng ý ghi).
-- Còn `\todo`:
-  - đơn vị và email của từng tác giả;
+- Người dùng chọn không ghi đơn vị và email tác giả (2026-10-29). Paper không còn `\todo`.
 - Tiền tệ: đề thi không ghi (người dùng xác nhận 2026-10-29); paper ghi "units of the source data".
 - **Đã kiểm tài liệu (2026-10-29):**
   - Đọc bản đầy đủ: hasan2022, hobor2026, retail2023 (Haque et al.). Chỉ đọc tóm tắt: ensafi2022, albassam2026, theodoridis2025, qureshi2024. MDPI, ScienceDirect và IEEE chặn tải PDF tự động; người dùng có thể tải bằng trình duyệt nếu muốn kiểm kỹ hơn.
