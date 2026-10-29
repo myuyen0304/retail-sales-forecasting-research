@@ -40,6 +40,7 @@ $PY -m rsf.run cv   --models all  --jobs 3                # 4 chuỗi × 2 targe
 $PY scripts/make_tables.py && $PY scripts/make_figures.py # bảng + hình CV
 $PY -m rsf.run test --models all  --jobs 3                # CHỈ chạy sau khi đã chọn phương pháp đề xuất trên CV
 $PY scripts/make_tables.py --test && $PY scripts/make_figures.py --test
+$PY scripts/make_paper_tables.py                         # bảng LaTeX cho paper → paper/tables/*.tex
 ```
 
 Trên console Windows, nếu lỗi in tiếng Việt thì đặt `PYTHONUTF8=1`. Đổi thư mục kết quả bằng biến môi trường `RSF_RESULTS_DIR`.

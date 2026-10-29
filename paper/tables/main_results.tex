@@ -1,0 +1,33 @@
+\begin{table*}[t]\centering
+\caption{Revenue forecast accuracy. MAE in thousands: mean over the four CV folds (365-day horizon) and on the test set (549-day horizon); Avg is the mean over the four series. Test MAPE (\%) is averaged over the four series. Bold: lowest value in each column. Online selection has no F1 forecast and is compared on F2--F4 in the text.}\label{tab:main}
+\footnotesize
+\begin{tabular}{@{}l rrrrr rrrrr r@{}}
+\toprule
+ & \multicolumn{5}{c}{Cross-validation MAE} & \multicolumn{5}{c}{Test MAE} & Test \\
+\cmidrule(lr){2-6}\cmidrule(lr){7-11}
+Model & Total & East & Central & West & Avg & Total & East & Central & West & Avg & MAPE \\
+\midrule
+\multicolumn{12}{@{}l}{\emph{Baselines}} \\
+SNaive-1Y & 1{,}297 & 655 & 474 & 365 & 698 & 723 & 413 & 328 & 228 & 423 & 38.7 \\
+SNaive-2Y & 1{,}720 & 834 & 554 & 494 & 900 & 716 & 409 & 312 & 228 & 416 & 37.8 \\
+\multicolumn{12}{@{}l}{\emph{Statistical}} \\
+ARIMA & 3{,}189 & 958 & 1{,}068 & 603 & 1{,}454 & 1{,}855 & 952 & 642 & 293 & 936 & 113.2 \\
+SARIMA & 1{,}696 & 809 & 499 & 382 & 846 & 1{,}306 & 612 & 389 & 205 & 628 & 62.2 \\
+SARIMAX & 1{,}014 & 503 & 352 & 279 & 537 & 645 & 343 & 275 & 183 & 361 & 32.3 \\
+Prophet & 1{,}008 & 505 & 353 & 279 & 536 & 631 & 340 & 277 & 181 & 357 & 32.0 \\
+\multicolumn{12}{@{}l}{\emph{Machine learning}} \\
+Random Forest & 1{,}067 & 537 & 353 & 311 & 567 & 612 & 340 & 263 & 188 & 351 & 31.2 \\
+Gradient Boosting & 970 & 488 & 326 & 282 & 517 & 569 & \textbf{316} & 248 & 170 & 326 & 29.4 \\
+XGBoost & 961 & 483 & \textbf{324} & 280 & 512 & \textbf{562} & 321 & 247 & \textbf{169} & \textbf{325} & \textbf{29.2} \\
+LightGBM & 964 & 482 & 325 & 284 & 514 & 571 & 319 & 249 & 170 & 327 & 29.2 \\
+\multicolumn{12}{@{}l}{\emph{Deep learning}} \\
+RNN & \textbf{960} & \textbf{472} & 325 & \textbf{275} & \textbf{508} & 593 & 329 & 251 & 175 & 337 & 29.8 \\
+LSTM & 961 & 484 & 331 & 276 & 513 & 614 & 338 & 257 & 183 & 348 & 30.4 \\
+\multicolumn{12}{@{}l}{\emph{Combination}} \\
+Average of top 3 & 999 & 483 & 331 & 278 & 523 & 580 & 320 & 247 & 176 & 331 & 29.5 \\
+Inverse-MAE top 3 & 999 & 483 & 331 & 278 & 523 & 580 & 320 & 247 & 176 & 331 & 29.5 \\
+NNLS stacking & 996 & 497 & 335 & 276 & 526 & 574 & 319 & \textbf{246} & 171 & 328 & 29.8 \\
+Online selection & -- & -- & -- & -- & -- & 593 & 329 & 247 & 175 & 336 & 29.6 \\
+\bottomrule
+\end{tabular}
+\end{table*}

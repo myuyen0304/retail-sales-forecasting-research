@@ -26,16 +26,19 @@ def scores(y, p) -> dict:
     return {"rmse": rmse(y, p), "mae": mae(y, p), "mape": mape(y, p)}
 
 
-def diebold_mariano(e1, e2, h: int = 1, power: int = 1) -> tuple[float, float]:
+def diebold_mariano(e1, e2, h: int = 1, power: int = 1, lags: int | None = None) -> tuple[float, float]:
     """DM với hiệu chỉnh mẫu nhỏ Harvey–Leybourne–Newbold. Thống kê âm: model 1 sai ít hơn.
 
+    Phương sai dài hạn của chênh lệch sai số theo Newey–West (nhân Bartlett), `lags` mặc định ⌊n^(1/3)⌋:
+    sai số của một đường dự báo nhiều ngày tự tương quan, nên chỉ dùng tự hiệp phương sai bậc 0 sẽ làm p-value quá nhỏ.
     Trả (thống kê, p-value hai phía, phân phối t với n−1 bậc tự do).
     """
     d = np.abs(np.asarray(e1)) ** power - np.abs(np.asarray(e2)) ** power
     n = len(d)
     dbar = d.mean()
-    gamma = [np.sum((d[k:] - dbar) * (d[:n - k] - dbar)) / n for k in range(h)]
-    var = (gamma[0] + 2 * sum(gamma[1:])) / n
+    L = int(n ** (1 / 3)) if lags is None else lags
+    gamma = [np.sum((d[k:] - dbar) * (d[:n - k] - dbar)) / n for k in range(L + 1)]
+    var = (gamma[0] + 2 * sum((1 - k / (L + 1)) * gamma[k] for k in range(1, L + 1))) / n
     dm = dbar / np.sqrt(var)
     hln = np.sqrt((n + 1 - 2 * h + h * (h - 1) / n) / n)
     stat = float(dm * hln)

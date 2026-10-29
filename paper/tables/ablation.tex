@@ -1,0 +1,27 @@
+\begin{table}[t]\centering
+\caption{Value of calendar information (revenue, MAE in thousands averaged over the four series). Top: pure recursive variant vs.\ calendar-aware model; gain = MAE reduction (\%); wins = folds (of 4 series $\times$ 4 folds) in which the calendar-aware model is better. Bottom: MAE change (\%) when one covariate group is removed, on CV folds F3--F4 (the folds in which all groups exist) and on the test set.}\label{tab:ablation}
+\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}l rrrr rrr@{}}
+\toprule
+ & \multicolumn{4}{c}{Cross-validation} & \multicolumn{3}{c}{Test} \\
+\cmidrule(lr){2-5}\cmidrule(lr){6-8}
+Model & Pure & Cal. & Gain & Wins & Pure & Cal. & Gain \\
+\midrule
+SARIMAX & 1{,}855 & 537 & 71 & 16/16 & 988 & 361 & 63 \\
+Prophet & 675 & 536 & 21 & 14/16 & 449 & 357 & 21 \\
+Random Forest & 747 & 567 & 24 & 14/16 & 500 & 351 & 30 \\
+Gradient Boosting & 700 & 517 & 26 & 14/16 & 489 & 326 & 33 \\
+XGBoost & 684 & 512 & 25 & 16/16 & 454 & 325 & 28 \\
+LightGBM & 681 & 514 & 25 & 14/16 & 514 & 327 & 36 \\
+RNN & 2{,}305 & 508 & 78 & 16/16 & 2{,}129 & 337 & 84 \\
+LSTM & 1{,}449 & 513 & 65 & 16/16 & 1{,}134 & 348 & 69 \\
+\midrule
+ & \multicolumn{2}{c}{$-$regime} & \multicolumn{2}{c}{$-$promo} & \multicolumn{2}{c}{$-$dom} & \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
+ & CV & Test & CV & Test & CV & Test & \\
+\midrule
+SARIMAX & +69 & -2 & +2 & +1 & +23 & +24 & \\
+LightGBM & +147 & +101 & +0 & +1 & +1 & +1 & \\
+\bottomrule
+\end{tabular}
+\end{table}

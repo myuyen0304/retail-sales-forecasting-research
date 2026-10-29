@@ -73,7 +73,17 @@
 - Bỏ cờ chế độ: LightGBM 659k, gấp đôi. Riêng SARIMAX bỏ cờ thì lại nhỉnh hơn một chút ở test (356k so với 361k).
 - COGS ở test: `lightgbm_nopromo` tốt nhất (294k), XGBoost 305k.
 
-**Bước tiếp:** viết paper theo hướng benchmark. Nguồn: `scores_test.csv`, `T7_dm_test.csv`, T1 (đã có cột test), F10/F11.
+**DM đã sửa (2026-10-29, người dùng đồng ý; protocol §9):**
+- `metrics.diebold_mariano` dùng phương sai Newey–West, nhân Bartlett, độ trễ ⌊n^(1/3)⌋ = 8.
+- `T7_dm_test.csv` dựng lại trên laptop từ dự báo đã lưu. Các bảng khác chỉ lệch nhiễu số thực khoảng 1e-10 do khác phiên bản pandas, nên giữ bản Colab.
+- Kết quả: RNN thua có ý nghĩa ở 3/4 chuỗi (Total 0,013, East 0,026, Central 0,029); West 0,064.
+
+**Paper (2026-10-29):**
+- Đã viết Methodology và Results/Discussion trong `paper/main.tex`.
+- Bảng LaTeX sinh bằng `scripts/make_paper_tables.py` → `paper/tables/*.tex`, được `\input` vào paper. Số trong câu văn lấy từ `results/tables`.
+- Máy chưa có LaTeX, nên chưa biên dịch thử; người dùng định dùng Overleaf.
+- Còn lại: Introduction (sửa theo kết quả), Related Work/research gap, Conclusion, Abstract, các `\todo` về dữ liệu (nhà bán lẻ, tiền tệ, giấy phép), tác giả.
+- Câu ở mục Introduction "(ii) measure how much of the accuracy comes from calendar information" vẫn còn từ hướng cũ, cần viết lại.
 
 ## 2026-10-25: trích data từ DWH Databricks (Claude)
 

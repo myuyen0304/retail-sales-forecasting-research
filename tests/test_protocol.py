@@ -77,3 +77,13 @@ def test_dm_sign():
     e = rng.normal(size=500)
     stat, p = metrics.diebold_mariano(0.5 * e, e)
     assert stat < 0 and p < 0.01
+
+
+def test_dm_autocorrelated_errors_widen_variance():
+    # Chênh lệch sai số tự tương quan mạnh: phương sai Newey–West phải lớn hơn bản bỏ qua tự tương quan
+    rng = np.random.default_rng(2)
+    z = np.convolve(rng.normal(size=600), np.ones(20) / 20, mode="valid")
+    e1, e2 = 1.0 + z, 1.05 + rng.normal(scale=0.01, size=len(z))
+    _, p_iid = metrics.diebold_mariano(e1, e2, lags=0)
+    _, p_hac = metrics.diebold_mariano(e1, e2)
+    assert p_hac > p_iid

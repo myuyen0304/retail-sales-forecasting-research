@@ -1,0 +1,20 @@
+\begin{table}[t]\centering
+\caption{Diebold--Mariano tests on the test set (revenue, absolute errors, Newey--West variance, HLN correction): $p$-values of each model against the most accurate forecast of the same series (``best''). Bold: $p<0.05$.}\label{tab:dm}
+\footnotesize
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Model & Total & East & Central & West \\
+\midrule
+XGBoost & best & 0.317 & 0.843 & best \\
+Gradient Boosting & 0.334 & best & 0.465 & 0.759 \\
+LightGBM & 0.134 & 0.164 & 0.279 & 0.455 \\
+NNLS stacking & 0.073 & 0.581 & best & 0.276 \\
+RNN & \textbf{0.013} & \textbf{0.026} & \textbf{0.029} & 0.064 \\
+LSTM & \textbf{$<$0.001} & \textbf{0.014} & \textbf{0.002} & \textbf{$<$0.001} \\
+Random Forest & \textbf{$<$0.001} & \textbf{$<$0.001} & \textbf{0.003} & \textbf{$<$0.001} \\
+SARIMAX & \textbf{0.009} & 0.076 & \textbf{0.002} & \textbf{0.013} \\
+Prophet & \textbf{0.025} & 0.103 & \textbf{$<$0.001} & \textbf{0.023} \\
+SNaive-1Y & \textbf{$<$0.001} & \textbf{$<$0.001} & \textbf{$<$0.001} & \textbf{$<$0.001} \\
+\bottomrule
+\end{tabular}
+\end{table}

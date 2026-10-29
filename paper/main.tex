@@ -191,7 +191,7 @@ For this reason we report the mean and standard deviation across folds, and do n
 Models are compared with two statistical tests:
 \begin{itemize}
 \item On cross-validation, the Friedman test with the Nemenyi post-hoc test~\cite{demsar2006statistical} ($\alpha=0.05$) ranks the ten main models and two baselines over the 16 revenue problems (four series $\times$ four folds).
-\item On the test set, each model is compared with the most accurate model of the same series and target using the Diebold--Mariano test~\cite{diebold1995dm} on absolute errors, with the small-sample correction of Harvey et al.~\cite{harvey1997hln}. \todo{state the long-run variance estimator once the autocorrelation-robust version is adopted}
+\item On the test set, each model is compared with the most accurate model of the same series and target using the Diebold--Mariano test~\cite{diebold1995dm} on absolute errors, with the small-sample correction of Harvey et al.~\cite{harvey1997hln}. Errors along a forecast path are autocorrelated, so the long-run variance of the loss differential is estimated with the Newey--West estimator (Bartlett kernel, $\lfloor n^{1/3}\rfloor=8$ lags for $n=549$), and $p$-values are taken from the $t_{n-1}$ distribution.
 \end{itemize}
 
 \subsection{Forecast combination}
@@ -218,21 +218,132 @@ This rule selected the RNN (mean of five seeds), and the choice was recorded bef
 The test set is nonetheless reported for every model, so that the selected method can be compared with all alternatives on unseen data.
 
 % ---------------------------------------------------------------- 4.5
+% Số trong mục này lấy từ results/tables/*.csv; bảng sinh bằng scripts/make_paper_tables.py.
 \section{Experiments and Results}
 \subsection{Setup}
-\todo{hardware, library versions from results/env\_*.json, runtime table T8}.
+Cross-validation, test forecasts and the tuning of RNN/LSTM were run on Google Colab (2 vCPUs, CPU only).
+The software stack was Python 3.13, statsmodels 0.15.0, Prophet 1.5.0, scikit-learn 1.6.1, XGBoost 3.4.1, LightGBM 4.6.0 and PyTorch 2.11.0.
+The statistical and tree-based models were tuned beforehand on a 12-core laptop (Python 3.13.5).
+The median time to fit one model to one series, target and fold was:
+\begin{itemize}
+\item 1.1\,s for XGBoost, 1.3\,s for Gradient Boosting and 2.5\,s for LightGBM;
+\item 16\,s for Random Forest and 66\,s for SARIMAX;
+\item 35\,s per seed for the RNN and 88\,s per seed for the LSTM, so five-seed RNN and LSTM forecasts cost about 160 and 400 times as much as XGBoost.
+\end{itemize}
+Every one of the 1{,}216 CV tasks and 304 test tasks finished without error.
+
+\input{tables/main_results.tex}
+
 \subsection{Cross-validation results}
-\todo{Table T1, Fig. F04, F05}.
-\subsection{Value of calendar information}
-\todo{Table T2, Fig. F06}.
-\subsection{Forecast combination}
-\todo{T1 ensemble rows}.
-\subsection{Multi-region: direct vs. bottom-up}
-\todo{T4, Fig. F09}.
+Table~\ref{tab:main} (left) reports revenue MAE averaged over the four CV folds.
+The five best models form a tight group.
+Averaged over the four series, their MAE is:
+\begin{itemize}
+\item RNN 508 thousand, which is the lowest;
+\item XGBoost 512, LSTM 513 and LightGBM 514;
+\item Gradient Boosting 517.
+\end{itemize}
+These five are followed by Prophet and SARIMAX (536--537) and Random Forest (567).
+All of them clearly improve on the seasonal-naive baseline (698).
+ARIMA (1{,}454) and SARIMA (846) are worse than SNaive-1Y.
+The Friedman test rejects equal performance over the 16 revenue problems ($p=4.6\times10^{-24}$; Fig.~\ref{fig:cd}).
+However, the Nemenyi critical difference ($\mathrm{CD}=4.17$) is wide.
+All eight covariate-based models lie within one CD of the best average rank, while the baselines, SARIMA and ARIMA are significantly worse.
+Fold F2, which contains the level shift, dominates the errors: its MAE is about 750 thousand for the leading models, against 316--532 thousand in the other folds.
+
+The RNN's advantage depends on seed averaging.
+Each RNN seed on its own has a mean MAE of $522\pm17$ thousand, which is worse than a single XGBoost fit (512).
+Only the average of the five seed forecasts reaches 508.
+The fold closest to the test period also points in a different direction: on F4, XGBoost (316) and LightGBM (317) are ahead of RNN (338) and LSTM (360).
+
+\begin{figure}[t]\centering
+\includegraphics[width=\columnwidth]{F05_cd_ranks.pdf}
+\caption{Average ranks of the main models and baselines over 16 revenue problems (four series $\times$ four CV folds). Shaded: within the Nemenyi critical difference of the best rank.}\label{fig:cd}
+\end{figure}
+
 \subsection{Test-set results}
-\todo{T1 test columns, T7 DM tests, Fig. F10, F11}.
+Applying the rule of Section~III to the CV results selected the RNN as the proposed method.
+The test set, however, ranks the models differently (Table~\ref{tab:main}, right; Fig.~\ref{fig:test}).
+\begin{itemize}
+\item The three gradient-boosted tree models are the most accurate: XGBoost has an average MAE of 325 thousand (MAPE 29.2\%), Gradient Boosting 326 and LightGBM 327.
+\item NNLS stacking follows with 328.
+\item The RNN reaches 337 (3.7\% above XGBoost), and a single RNN seed reaches $344\pm4$.
+\item The LSTM reaches 348.
+\item XGBoost reduces MAE by 23\% relative to SNaive-1Y (423) and by 22\% relative to SNaive-2Y (416).
+\end{itemize}
+The Diebold--Mariano tests in Table~\ref{tab:dm} compare each model with the most accurate forecast of each series:
+\begin{itemize}
+\item None of XGBoost, Gradient Boosting, LightGBM and NNLS stacking is significantly less accurate than the best forecast ($p\ge0.07$).
+\item The RNN is significantly less accurate in three of the four series ($p=0.013$--$0.029$), and in the fourth (West) $p=0.064$.
+\item The LSTM and Random Forest are significantly worse in all four series.
+\end{itemize}
+The proposed method thus ranked first on CV but did not keep that position on unseen data.
+This agrees with its weaker result on F4 and with how small its CV margin was.
+
+Errors do not grow with the horizon for the direct models.
+For XGBoost, the test MAE (mean of four series) is 292 thousand for leads 1--30, 313 for 31--90, 355 for 91--365 and 289 for 366--549.
+The higher error at 91--365 days coincides with the volatile spring of 2022 (Fig.~\ref{fig:test}) rather than reflecting distance from the origin.
+By contrast, the recursive pure variants degrade sharply with the horizon (Table~\ref{tab:ablation}).
+In the odd-year August campaign of 2021, SNaive-1Y copies a non-campaign year and its MAE rises to 893 thousand, while the main covariate-based models stay between 263 (Prophet) and 348 thousand (Random Forest).
+
+\begin{figure*}[t]\centering
+\includegraphics[width=\textwidth]{F11_test_overlay.pdf}
+\caption{Total revenue on the test set (1 July 2021--31 December 2022): actual values and forecasts of the three most accurate models and SNaive-1Y, all produced from the single origin of 30 June 2021 (7-day means). Shaded: odd-year August campaign.}\label{fig:test}
+\end{figure*}
+
+\input{tables/dm_test.tex}
+
+\subsection{Value of calendar information}
+Table~\ref{tab:ablation} (top) compares each calendar-aware model with its pure recursive counterpart.
+\begin{itemize}
+\item Calendar information reduces revenue MAE by 21--78\% on CV and by 21--84\% on the test set.
+\item The calendar-aware version is better in 14 to 16 of the 16 series--fold combinations for every model.
+\item The gains are largest for the networks (65--84\%) and for SARIMA versus SARIMAX (63--71\%). Their recursive versions drift away from the level of the series over a horizon of one year or more.
+\item For the tree models, the gains are 24--36\%.
+\end{itemize}
+These gains are upper bounds on the value of calendar information, because the pure variants were not tuned.
+
+The feature-group ablation (Table~\ref{tab:ablation}, bottom) shows which information matters:
+\begin{itemize}
+\item \emph{Regime indicator.} Removing it increases the F3--F4 MAE by 147\% for LightGBM and by 69\% for SARIMAX. On the test set, LightGBM without the indicator is still twice as inaccurate ($+101\%$), whereas SARIMAX is unaffected ($-2\%$).
+\item \emph{Intra-month variables.} They matter for SARIMAX ($+23\%$ on CV, $+24\%$ on test) but not for LightGBM ($+1\%$). The tree set still contains day of year and month, so LightGBM can recover the position within the month from them.
+\item \emph{Promotion indicators.} Removing them changes the overall MAE by at most 2\%, because the campaigns recur on fixed dates and are largely absorbed by the seasonal terms. The exception is the odd-year campaign: in August 2021, removing them raises the MAE of LightGBM from 295 to 445 thousand and of SARIMAX from 282 to 386 thousand. Promotion information therefore matters locally even though it barely moves the overall error.
+\end{itemize}
+
+\input{tables/ablation.tex}
+
+\subsection{Forecast combination}
+Combinations are judged against the online-selection benchmark on folds F2--F4.
+There, the average of the top three models reaches a mean MAE of 504 thousand, against 506 for online selection.
+Its rank is the best among all models (4.67 versus 5.58), but the difference is well within the Nemenyi CD of 6.66.
+On the test set, NNLS stacking (328) improves on online selection (336), which picked the RNN for three of the four series.
+The equal-weight and inverse-MAE combinations (331) are close to each other because their weights are nearly equal.
+No combination is more accurate than the best single model on test (XGBoost, 325).
+Forecast combination therefore mainly protects against choosing a weaker model.
+
+\subsection{Multi-region and COGS}
+\begin{itemize}
+\item \emph{Bottom-up versus direct.} Summing the three regional forecasts gives a lower CV MAE for Total revenue than forecasting the total directly, for every main model. The gain is 1.3--4.0\% for the calendar-aware models, 5.9\% for SARIMA and 21.6\% for ARIMA.
+\item \emph{COGS direct versus ratio.} Forecasting COGS directly is more accurate than scaling the revenue forecast by a seasonal COGS-to-revenue ratio, by 0.5--4.0\% across the calendar-aware models.
+\item \emph{COGS on the test set.} The best COGS forecasts come from LightGBM without promotion indicators (average MAE 294 thousand) and XGBoost (305).
+\end{itemize}
+
 \subsection{Discussion}
-\todo{error by lead time (F08), odd-year August (T6), COGS direct vs ratio (T5), limitations: single retailer, retrospective benchmark}.
+Three findings stand out.
+\begin{enumerate}
+\item \emph{Gradient-boosted trees.} With calendar covariates and a direct (non-recursive) strategy, these trees are the most accurate and cheapest option for daily revenue forecasts up to 18 months ahead. RNN and LSTM fed the same covariates are competitive on CV but not better on unseen data, and need several seeds to reach that level. This agrees with the strength of tree ensembles in retail competitions~\cite{makridakis2022m5,januschowski2022trees}.
+\item \emph{What drives accuracy.} How a model receives information about the series matters more than which model is used. On the test set, each of the eight calendar-aware models in Table~\ref{tab:ablation} beats every pure recursive variant, and the regime indicator is the most valuable single covariate group. Together with SARIMAX's insensitivity to it on test, this suggests that the benefit of the indicator depends on how the model represents the level of the series.
+\item \emph{Rankings among close models are unstable.} A margin of 1\% on CV did not survive the test period. Benchmarks should therefore report significance tests and treat models within the critical difference as equivalent.
+\end{enumerate}
+
+\emph{Limitations.}
+\begin{itemize}
+\item The study covers a single retailer and a single test origin.
+\item It is a retrospective benchmark. The covariate set and the date of the level shift come from a previous analysis of the same data whose backtest overlapped the test period, so the test set was not completely unseen during model development.
+\item Hyperparameters were tuned on Total revenue only and applied to all series and targets.
+\item The pure variants were not tuned.
+\item The variance estimator of the Diebold--Mariano test was corrected after the test results were first computed, to account for autocorrelated daily errors. This weakened one of the four RNN comparisons from significant to non-significant (West), and we report the corrected values.
+\end{itemize}
 
 \section{Conclusion}
 \todo{}
