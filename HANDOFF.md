@@ -85,7 +85,7 @@
 - **Bản nháp đủ mọi mục (2026-10-29):** Abstract (245 từ), Introduction, Related Work, Methodology, Results/Discussion, Conclusion.
 - Xem PDF qua Overleaf: chạy `scripts/make_overleaf_zip.py` → `paper/overleaf.zip` (gitignore). Lần đầu upload cả zip; về sau chỉ upload đè `main.tex`.
 - Đã điền (2026-10-29):
-  - tác giả: Tran Thi My Uyen, Ngo Duy Thong;
+  - tác giả theo kiểu IEEE (tên trước, họ sau): Thi My Uyen Tran, Duy Thong Ngo;
   - mô tả dữ liệu theo datathon.site và data/raw;
   - link repo GitHub (người dùng đồng ý ghi).
 - Người dùng chọn không ghi đơn vị và email tác giả (2026-10-29). Paper không còn `\todo`.
