@@ -89,19 +89,67 @@ Section~V concludes.
 
 % ---------------------------------------------------------------- 4.3
 \section{Related Work}
+% Chỉ dùng nội dung đã biết chắc của các bài kinh điển. Các bài có status "kiểm lại trong bài" / "đọc full text"
+% trong literature_matrix.csv chỉ được nhắc ở mức chủ đề; kết luận cụ thể phải đọc bản đầy đủ rồi mới thêm.
+Retail forecasting has a large literature; Fildes et al.~\cite{fildes2022retail} review research and practice, and Petropoulos et al.~\cite{petropoulos2022theory} survey forecasting methods more broadly.
+We focus on the three model families compared in this study, on how forecasts are combined and evaluated, and on what is missing from existing comparisons.
+
 \subsection{Statistical models}
-ARIMA-type models remain the reference for univariate forecasting; for long seasonal periods such as daily data with annual seasonality, Fourier terms with ARMA errors (dynamic harmonic regression) are the practical form of seasonal ARIMA~\cite{hyndman2021fpp3}.
-Prophet decomposes a series into trend, seasonality and holiday effects~\cite{taylor2018prophet}.
+ARIMA models describe a series through its own past values and past errors, and seasonal ARIMA adds the same structure at a seasonal lag~\cite{hyndman2021fpp3}.
+For daily data with annual seasonality, a seasonal lag of 365 days makes this impractical.
+The usual alternative is dynamic harmonic regression: annual seasonality is represented by Fourier terms, short-term dynamics by ARMA errors, and further known regressors can be added (ARIMAX/SARIMAX)~\cite{hyndman2021fpp3}.
+Prophet~\cite{taylor2018prophet} takes a different route.
+It decomposes a series into a piecewise trend, Fourier-based seasonal components and holiday effects, fitted as a regression model.
+It was designed for business series with strong seasonality and known special days, and it accepts additional regressors.
+Both approaches extrapolate a fitted structure and therefore forecast long horizons directly from a single origin.
+
 \subsection{Machine learning}
-Random forests~\cite{breiman2001rf} and gradient boosting~\cite{friedman2001gbm}, with its scalable implementations XGBoost~\cite{chen2016xgboost} and LightGBM~\cite{ke2017lightgbm}, are now standard for retail demand forecasting~\cite{januschowski2022trees,makridakis2022m5,spiliotis2020sku}.
-Calendar-related special days are a key input for daily retail demand~\cite{huber2020calendric}.
+Random forests~\cite{breiman2001rf} average many decorrelated regression trees.
+Gradient boosting~\cite{friedman2001gbm} instead builds trees sequentially, each fitted to the errors of the current ensemble.
+XGBoost~\cite{chen2016xgboost} and LightGBM~\cite{ke2017lightgbm} are scalable, regularised implementations of gradient boosting that are widely used in practice.
+Gradient-boosted trees were the basis of most top solutions in the M5 competition on Walmart unit sales~\cite{makridakis2022m5}, and Januschowski et al.~\cite{januschowski2022trees} discuss why tree ensembles work well in forecasting.
+Trees do not extrapolate along time, so they forecast either recursively from lagged values or directly from known-in-advance covariates.
+For daily retail demand, calendar-related special days are an important input~\cite{huber2020calendric}.
+Statistical and machine learning methods have also been compared for daily demand at the product (SKU) level~\cite{spiliotis2020sku}.
+
 \subsection{Deep learning}
-Recurrent networks~\cite{elman1990rnn} and LSTM~\cite{hochreiter1997lstm} have been applied to sales forecasting~\cite{bandara2019lstm}; a review of RNNs for forecasting is given in~\cite{hewamalage2021rnn}.
-\subsection{Forecast combination and evaluation}
-Combining forecasts dates back to~\cite{bates1969combination}; see~\cite{clemen1989combining,wang2023combinations} for reviews and~\cite{wolpert1992stacked} for stacking.
-For time series, cross-validation must respect temporal order~\cite{tashman2000outofsample,bergmeir2012cv,bergmeir2018cv}; forecast accuracy comparisons can be tested with the Diebold--Mariano test~\cite{diebold1995dm,harvey1997hln} and, across many problems, with Friedman--Nemenyi ranks~\cite{demsar2006statistical}.
+Recurrent neural networks~\cite{elman1990rnn} process a sequence step by step through a hidden state, and LSTM~\cite{hochreiter1997lstm} adds gates that help retain information over long sequences.
+Bandara et al.~\cite{bandara2019lstm} applied LSTM to e-commerce sales demand.
+Hewamalage et al.~\cite{hewamalage2021rnn} review RNNs for forecasting and show that their accuracy depends strongly on preprocessing and on design choices such as the input window and the multi-step strategy.
+More recent architectures, including Transformers, target long horizons.
+However, Zeng et al.~\cite{zeng2023transformers} found that a simple linear model outperformed Transformer-based models on standard long-horizon benchmarks.
+Deep models have also been compared on retail demand data~\cite{retail2023multivariate,theodoridis2025lstmixer}.
+
+\subsection{Forecast combination}
+Since Bates and Granger~\cite{bates1969combination}, combining forecasts from different models has been one of the most reliable ways to improve accuracy~\cite{clemen1989combining,wang2023combinations}.
+Simple averages are often hard to beat.
+Weights estimated from past performance, or learned by stacking~\cite{wolpert1992stacked}, can help when enough out-of-sample forecasts are available.
+For classification, the corresponding method is majority voting; for regression it is averaging.
+With multiple regions, a total can also be forecast bottom-up, by summing regional forecasts, or by reconciling forecasts across levels of the hierarchy~\cite{hyndman2011hierarchical,wickramasuriya2019mint}.
+
+\subsection{Evaluation of forecasting models}
+Evaluation should mimic real use: models are refitted at successive forecast origins and evaluated on the periods that follow (rolling-origin evaluation)~\cite{tashman2000outofsample}.
+Standard $k$-fold cross-validation is valid for time series only under specific conditions~\cite{bergmeir2012cv,bergmeir2018cv}.
+Error measures have known weaknesses, for example MAPE when values are close to zero, so several measures are usually reported together~\cite{hyndman2006measures}.
+Two tests are commonly used to check whether differences in accuracy are larger than chance:
+\begin{itemize}
+\item the Diebold--Mariano test~\cite{diebold1995dm}, with the small-sample correction of Harvey et al.~\cite{harvey1997hln}, compares two forecasts of the same series;
+\item the Friedman test with Nemenyi post-hoc comparisons compares many models over many problems~\cite{demsar2006statistical}.
+\end{itemize}
+
 \subsection{Research gap}
-\todo{write after reading full texts in literature\_matrix.csv: few studies give all model families the same covariates, use long horizons with direct (non-recursive) strategies, and test significance}.
+% Câu "to our knowledge" cần kiểm lại sau khi đọc bản đầy đủ các bài trong literature_matrix.csv.
+Applied comparisons of these model families on retail data reach different conclusions~\cite{hasan2022comparative,ensafi2022seasonal,hobor2026comparative}.
+As discussed in the introduction, such comparisons rarely control what each model is given, how it forecasts and how it is evaluated.
+To our knowledge, few studies on daily retail revenue combine all of the following:
+\begin{itemize}
+\item all three model families receive the same known-in-advance covariates;
+\item every model forecasts directly over horizons of a year or more, so that recursive error accumulation does not decide the comparison;
+\item accuracy is evaluated with several rolling origins plus a single hold-out test;
+\item differences are tested for significance;
+\item an ablation separates the contribution of the model from that of the information it receives.
+\end{itemize}
+This study addresses that combination for a total series and three regional series.
 
 % ---------------------------------------------------------------- 4.4
 % Mọi chi tiết ở mục này lấy từ protocol.md và src/rsf/ (đúng với lần chạy CV/test trên Colab).
