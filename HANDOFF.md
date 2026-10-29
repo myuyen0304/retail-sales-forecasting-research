@@ -39,7 +39,33 @@
 - Notebook có thêm mục 10 (test), với 3 lệnh `rsf.run test`, cell kiểm đủ file và lệnh `make_tables/make_figures --test`.
 - Nhánh `--test` của hai script đã thử trên dự báo giả (lặp lại dự báo F4, ở thư mục scratch): ra đủ `scores_test.csv`, T7, F08, F10, F11, không lỗi.
 
-**Bước tiếp:** người dùng chạy mục 10 trên Colab rồi tải `results/` về như lần trước. Sau đó đọc `scores_test.csv` và T7, rồi viết phần Results.
+## 2026-10-29: test đã chạy xong (một lần, trên Colab)
+
+**Đã làm:**
+- 304/304 task test `ok`, không trùng: 22 model × 8, `rnn`/`lstm` 40 mỗi model, bản `_ar` 24 mỗi model.
+- `preds/cv` trùng từng byte với bản trước, `runs_cv.csv` không đổi. `env_cv.json` có thêm vài mục do chạy lại cell CV (mọi task đều bỏ qua).
+- `results/` cũ (chỉ có CV) chuyển ra `D:\retail-sales-forecasting-results-cv-20261028`.
+- `env_tune.json` gộp lại lần nữa: 2 mục laptop và 6 mục Colab.
+- Cell kiểm của mục 10 từng lỗi import. Nguyên nhân: kernel coi `/content/rsf` là namespace package. Đã sửa: lấy danh sách model qua `subprocess`.
+
+**Kết quả test** (revenue, MAE trung bình 4 chuỗi):
+
+| Model | MAE |
+|---|---|
+| XGBoost | 325k |
+| GB | 326k |
+| LightGBM | 327k |
+| ens_stack_nnls | 328k |
+| RNN | 337k (từng seed: 344k ± 4k) |
+| LSTM | 348k |
+| SNaive-1Y | 423k |
+
+- XGBoost thấp hơn SNaive-1Y 23%. MAPE của nhóm đầu khoảng 29%.
+- **Phương pháp đề xuất RNN thua model tốt nhất có ý nghĩa** ở cả 4 chuỗi (DM, p = 0,002–0,04). XGBoost, GB và LightGBM không tách được nhau (p > 0,1, riêng TOTAL XGBoost so với LightGBM p = 0,048). Đúng như tín hiệu ở F4. Paper báo trung thực: RNN thắng sát nút trên CV nhưng không giữ được ở test.
+- Bỏ cờ chế độ: LightGBM 659k, gấp đôi. Riêng SARIMAX bỏ cờ thì lại nhỉnh hơn một chút ở test (356k so với 361k).
+- COGS ở test: `lightgbm_nopromo` tốt nhất (294k), XGBoost 305k.
+
+**Bước tiếp:** viết paper theo hướng benchmark. Nguồn: `scores_test.csv`, `T7_dm_test.csv`, T1 (đã có cột test), F10/F11.
 
 ## 2026-10-25: trích data từ DWH Databricks (Claude)
 
