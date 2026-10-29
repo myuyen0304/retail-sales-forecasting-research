@@ -8,7 +8,9 @@
 \begin{document}
 % Tiêu đề tạm (2026-10-28): hướng benchmark, trung tính; có thể chỉnh sau khi viết xong Results
 \title{Benchmarking Statistical, Machine Learning and Deep Learning Models for Daily Retail Revenue Forecasting Across Multiple Regions}
-\author{\IEEEauthorblockN{\todo{authors}}\IEEEauthorblockA{\todo{affiliation}}}
+\author{\IEEEauthorblockN{Tran Thi My Uyen}\IEEEauthorblockA{\todo{affiliation, email}}
+\and
+\IEEEauthorblockN{Ngo Duy Thong}\IEEEauthorblockA{\todo{affiliation, email}}}
 \maketitle
 
 % ---------------------------------------------------------------- 4.1
@@ -83,7 +85,7 @@ The main contributions are as follows.
 \item Evidence that RNN and LSTM fed the same covariates are competitive in cross-validation but not better on unseen data. The RNN, which ranked first in cross-validation, was significantly less accurate than the best model in three of four series on the test set.
 \item An ablation showing what drives accuracy. Calendar-aware direct models reduce error by 21--84\% relative to recursive models without calendar information. An explicit indicator of the 2019 level shift is the most valuable covariate group. Promotion indicators matter mainly during the campaigns themselves.
 \end{itemize}
-\todo{decide whether to add a code-availability sentence with the public repository URL (check anonymity rules of the venue)}
+The code, the pre-registered protocol and all result tables are publicly available at \url{https://github.com/myuyen0304/retail-sales-forecasting-research}.
 
 The rest of the paper is organised as follows.
 Section~II reviews related work.
@@ -161,7 +163,11 @@ This study addresses that combination for a total series and three regional seri
 % Mọi chi tiết ở mục này lấy từ protocol.md và src/rsf/ (đúng với lần chạy CV/test trên Colab).
 \section{Methodology}
 \subsection{Data}
-The data are the order-level transactions of an online retailer released for Datathon 2026 \todo{describe retailer, product range, currency and data licence}.
+% Nguồn mô tả: trang datathon.site (2026-10-29) và data/raw (products.csv, geography.csv, orders.csv).
+The data are the order-level transactions of an online fashion retailer in Vietnam, released to participants of DATATHON 2026 (\url{https://www.datathon.site/}), organised by VinTelligence, the Data Science and AI Club of VinUniversity.
+They cover 646{,}945 orders and a catalogue of 2{,}412 products in four categories (Streetwear, Outdoor, Casual and GenZ).
+Monetary values are in the units of the source data \todo{currency}.
+The organisers do not state a public licence, so the raw data are not redistributed with the code.
 For this study, the series were extracted from a data warehouse built on the competition data (release \texttt{ccde5a5e}); we verified that all four series and the promotion calendar are identical, to within $1.3\times10^{-8}$, to those rebuilt directly from the raw files.
 Daily revenue is $\sum$ quantity $\times$ unit price (before discounts, over orders of all statuses) and daily COGS is $\sum$ quantity $\times$ unit cost.
 Each order is assigned to one of three regions (East, Central, West) through its postal code; the regions account for 46.5\%, 30.1\% and 23.4\% of total revenue, and the three regional series sum exactly to the national total.

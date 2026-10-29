@@ -84,10 +84,13 @@
 - Máy chưa có LaTeX, nên chưa biên dịch thử; người dùng định dùng Overleaf.
 - **Bản nháp đủ mọi mục (2026-10-29):** Abstract (245 từ), Introduction, Related Work, Methodology, Results/Discussion, Conclusion.
 - Xem PDF qua Overleaf: chạy `scripts/make_overleaf_zip.py` → `paper/overleaf.zip` (gitignore). Lần đầu upload cả zip; về sau chỉ upload đè `main.tex`.
+- Đã điền (2026-10-29):
+  - tác giả: Tran Thi My Uyen, Ngo Duy Thong;
+  - mô tả dữ liệu theo datathon.site và data/raw;
+  - link repo GitHub (người dùng đồng ý ghi).
 - Còn `\todo`:
-  - tác giả và đơn vị;
-  - mô tả dữ liệu (nhà bán lẻ, tiền tệ, giấy phép);
-  - có ghi link repo không (tùy quy định ẩn danh của nơi nộp).
+  - đơn vị và email của từng tác giả;
+  - đơn vị tiền tệ (trang Datathon không ghi; giá sản phẩm khoảng 9–40,950 nên chưa chắc là VND).
 - **Đã kiểm tài liệu (2026-10-29):**
   - Đọc bản đầy đủ: hasan2022, hobor2026, retail2023 (Haque et al.). Chỉ đọc tóm tắt: ensafi2022, albassam2026, theodoridis2025, qureshi2024. MDPI, ScienceDirect và IEEE chặn tải PDF tự động; người dùng có thể tải bằng trình duyệt nếu muốn kiểm kỹ hơn.
   - Đã sửa trích dẫn sai: retail2023 không có model deep learning, nên đã chuyển sang mục Machine learning.
