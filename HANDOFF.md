@@ -82,8 +82,14 @@
 - Đã viết Methodology và Results/Discussion trong `paper/main.tex`.
 - Bảng LaTeX sinh bằng `scripts/make_paper_tables.py` → `paper/tables/*.tex`, được `\input` vào paper. Số trong câu văn lấy từ `results/tables`.
 - Máy chưa có LaTeX, nên chưa biên dịch thử; người dùng định dùng Overleaf.
-- Còn lại: Introduction (sửa theo kết quả), Related Work/research gap, Conclusion, Abstract, các `\todo` về dữ liệu (nhà bán lẻ, tiền tệ, giấy phép), tác giả.
-- Câu ở mục Introduction "(ii) measure how much of the accuracy comes from calendar information" vẫn còn từ hướng cũ, cần viết lại.
+- **Bản nháp đủ mọi mục (2026-10-29):** Abstract (245 từ), Introduction, Related Work, Methodology, Results/Discussion, Conclusion.
+- Xem PDF qua Overleaf: chạy `scripts/make_overleaf_zip.py` → `paper/overleaf.zip` (gitignore). Lần đầu upload cả zip; về sau chỉ upload đè `main.tex`.
+- Còn `\todo`:
+  - tác giả và đơn vị;
+  - mô tả dữ liệu (nhà bán lẻ, tiền tệ, giấy phép);
+  - có ghi link repo không (tùy quy định ẩn danh của nơi nộp).
+- **Trước khi nộp phải đọc bản đầy đủ** của `hasan2022comparative`, `ensafi2022seasonal`, `hobor2026comparative`. Kết luận hiện chỉ lấy từ tóm tắt. Câu "to our knowledge, few studies…" ở Research gap cũng cần đối chiếu với literature_matrix.
+- Các mục `@misc` arXiv trong `refs.bib` chưa có trường `author`.
 
 ## 2026-10-25: trích data từ DWH Databricks (Claude)
 
